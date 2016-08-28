@@ -15,7 +15,7 @@ class SimpleRenamer:
     def __init__(self):
         root = Tk()
         root.title("Simple Renamer")
-        
+     
         #Initializing tabs and adding frames
         tabs = Notebook(root)
         for tab in self.TAB_NAMES:
