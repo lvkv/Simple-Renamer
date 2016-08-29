@@ -184,14 +184,6 @@ class SimpleRenamer:
             self.completed_items[1] = False
         self.check_for_completion()
 
-    def key_down(self, event):
-        # INPUT: <KeyPress> event
-        # OUTPUT: Calls self.check_rename_entries
-        #
-        # Fixes laggy form completion detection bug
-
-        self.check_rename_entries()
-
     def on_validate(self, s):
         # INPUT: String input to entry
         # OUTPUT: Returns true and sets self.previous_bad_validation = False if
