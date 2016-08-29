@@ -6,6 +6,7 @@ import os
 
 
 class SimpleRenamer:
+    # To add a blank tab in the future, just add a new element to TAB_NAMES (and extra now)
     TAB_NAMES = ["Rename Files", "Move Files"]
 
     # All tabs will contain frames of the same size
@@ -26,6 +27,8 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Variables
         self.dir_path = StringVar()
+        self.replace_this = StringVar()
+        self.with_this = StringVar()
         self.rename_files = BooleanVar()
         self.rename_dirs = BooleanVar()
         self.rename_subdirs = BooleanVar()
@@ -38,10 +41,25 @@ class SimpleRenamer:
         label_2 = Label(rename_tab, text="  With this:  ")
         entry_1 = Entry(rename_tab, width=50)
         entry_2 = Entry(rename_tab, width=50)
-        checkbox_files = Checkbutton(rename_tab, text="Rename files")
-        checkbox_dirs = Checkbutton(rename_tab, text="Rename directories")
-        checkbox_subdirs = Checkbutton(rename_tab, text="Rename subdirectories")
-        checkbox_subfiles = Checkbutton(rename_tab, text="Rename subdirectory files")
+        checkbox_files = Checkbutton(rename_tab,
+                                     text="Rename files",
+                                     variable=self.rename_files,
+                                     onvalue=True,
+                                     offvalue=False)
+        checkbox_subfiles = Checkbutton(rename_tab, text="Rename subdirectory files",
+                                        variable=self.rename_subfiles,
+                                        onvalue=True,
+                                        offvalue=False)
+        checkbox_dirs = Checkbutton(rename_tab,
+                                    text="Rename directories",
+                                    variable=self.rename_dirs,
+                                    onvalue=True,
+                                    offvalue=False)
+        checkbox_subdirs = Checkbutton(rename_tab,
+                                       text="Rename subdirectories",
+                                       variable=self.rename_subdirs,
+                                       onvalue=True,
+                                       offvalue=False)
         button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
@@ -57,9 +75,9 @@ class SimpleRenamer:
         entry_1.grid(row=2, column=1)
         entry_2.grid(row=3, column=1)
         checkbox_files.grid(columnspan=2)
+        checkbox_subfiles.grid(columnspan=2)
         checkbox_dirs.grid(columnspan=2)
         checkbox_subdirs.grid(columnspan=2)
-        checkbox_subfiles.grid(columnspan=2)
         button_run_rename.grid(columnspan=2)
 
         # Text on bottom of window
@@ -87,9 +105,9 @@ class SimpleRenamer:
         # added, we'll swap this out for a dictionary.
 
         tab_text = event.widget.tab(event.widget.index("current"), "text")
-        if tab_text == "Rename Files":
+        if tab_text == self.TAB_NAMES[0]:  # "Rename Files"
             self.label.configure(text="Find and replace words in file names")
-        elif tab_text == "Move Files":
+        elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
 
 
