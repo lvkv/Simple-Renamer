@@ -83,6 +83,8 @@ class SimpleRenamer:
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
         self.button_run_rename.bind('<Button-1>', self.run_rename)
+        self.entry_replace_this.bind('<KeyPress>', self.check_rename_entries)
+        self.entry_with_this.bind('<KeyPress>', self.check_rename_entries)
         checkbox_files.bind('<Button-1>', self.checkbox_complete)
         checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
         checkbox_subdirs.bind('<Button-1>', self.checkbox_complete)
@@ -170,7 +172,7 @@ class SimpleRenamer:
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
 
-    def check_rename_entries(self):
+    def check_rename_entries(self, event):
         # INPUT: Nothing
         # OUTPUT:
         #
@@ -182,11 +184,19 @@ class SimpleRenamer:
             self.completed_items[1] = False
         self.check_for_completion()
 
+    def key_down(self, event):
+        # INPUT: <KeyPress> event
+        # OUTPUT: Calls self.check_rename_entries
+        #
+        # Fixes laggy form completion detection bug
+
+        self.check_rename_entries()
+
     def on_validate(self, s):
         # INPUT: String input to entry
         # OUTPUT: Returns true and sets self.previous_bad_validation = False if
         #
-        # I put some label swapping and form completion logic here to save going nuts
+        # Also swaps warning label and blank
 
         for character in self.bad_chars:
             for substring in s:
@@ -199,7 +209,6 @@ class SimpleRenamer:
             self.label_txt_warn.grid_remove()
             self.label_blank.grid()
             self.previous_bad_validation = False
-        self.check_rename_entries()
         return True
 
 root = Tk()
