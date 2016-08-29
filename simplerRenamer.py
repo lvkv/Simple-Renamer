@@ -26,6 +26,7 @@ class SimpleRenamer:
         tabs.grid()
 
         # "Rename Files" Tab - Variables
+        self.completed_items = [False, False, False, False] #choose dir, replacethis, withthis, >=1 checkbox
         self.dir_path = StringVar()
         self.replace_this = StringVar()
         self.with_this = StringVar()
@@ -60,11 +61,11 @@ class SimpleRenamer:
                                        variable=self.rename_subdirs,
                                        onvalue=True,
                                        offvalue=False)
-        button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
+        self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
-        button_run_rename.bind('<Button-1>', self.run_rename)
+        self.button_run_rename.bind('<Button-1>', self.run_rename)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2)
@@ -78,19 +79,28 @@ class SimpleRenamer:
         checkbox_subfiles.grid(columnspan=2)
         checkbox_dirs.grid(columnspan=2)
         checkbox_subdirs.grid(columnspan=2)
-        button_run_rename.grid(columnspan=2)
+        self.button_run_rename.grid(columnspan=2)
 
         # Text on bottom of window
         self.label = Label(master, text="")
         self.label.grid()
 
+    def check_for_completion(self):
+        for item in self.completed_items:
+            if not item:
+                return
+        self.button_run_rename.config(state = 'normal')
+
     def choose_dir(self, event):
         # INPUT: Window and left click event
         # OUTPUT: Changes value of self.dir_path to path of folder selected in dialog box
         #
-        # Not much to say about this one
+        # Included if statement to prevent setting self.dir_path = "" when user cancels dialog
 
-        self.dir_path = filedialog.askdirectory()
+        temp_dir = filedialog.askdirectory()
+        if temp_dir != "":
+            self.dir_path = temp_dir
+            self.completed_items = True
 
     def run_rename(self, event):
         # this is where the magic happens
