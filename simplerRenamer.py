@@ -14,12 +14,12 @@ class SimpleRenamer:
     FRAME_HEIGHT = 300
 
     def __init__(self, master):
-        master.title("Simple Renamer")
+        master.title("Simple Rename")
 
         # Entry validation
+        self.previous_bad_validation = False
         self.bad_chars = ['\\', '/', '¦', '*', '?', '"', '<', '>', '|']
-        vcmd = (master.register(self.onValidate),
-                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        vcmd = (master.register(self.onValidate), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
 
         # Initializing tabs and adding frames
         tabs = Notebook(master)
@@ -43,6 +43,7 @@ class SimpleRenamer:
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
         self.label_txt_warn = Label(rename_tab, text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
+        self.label_blank = Label(rename_tab, text=" ")
         label_1 = Label(rename_tab, text="  Replace this:  ")
         label_2 = Label(rename_tab, text="  With this:  ")
         entry_1 = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
@@ -81,6 +82,7 @@ class SimpleRenamer:
         button_dir.grid(columnspan=2)
         self.label_txt_warn.grid(columnspan=2, sticky=S)
         self.label_txt_warn.grid_remove()  # label_txtWarn is only shown when an illegal character is entered
+        self.label_blank.grid(columnspan=2, sticky=S)
         label_1.grid(row=2, sticky=E)
         label_2.grid(row=3, sticky=E)
         entry_1.grid(row=2, column=1)
@@ -130,7 +132,13 @@ class SimpleRenamer:
         self.check_for_completion()
 
     def run_rename(self, event):
-        # this is where the magic happens
+        # INPUT:
+        # OUTPUT:
+        #
+        # First if statement prevents running if user clicks on disabled button (why is that allowed?)
+
+        if str(self.button_run_rename['state']) == 'disabled':
+            return
         for file in os.walk():
             print(file)
 
@@ -150,8 +158,14 @@ class SimpleRenamer:
     def onValidate(self, d, i, P, s, S, v, V, W):
         for character in self.bad_chars:
             if S == character:
+                self.label_blank.grid_remove()
                 self.label_txt_warn.grid()
+                self.previous_bad_validation = True
                 return False
+        if self.previous_bad_validation:
+            self.label_txt_warn.grid_remove()
+            self.label_blank.grid()
+            self.previous_bad_validation = False
         return True
 
 root = Tk()
