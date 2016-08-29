@@ -6,7 +6,6 @@ import os
 
 
 class SimpleRenamer:
-    # To add a blank tab in the future, just add a new element to TAB_NAMES (and extra now)
     TAB_NAMES = ["Rename Files", "Move Files"]
 
     # All tabs will contain frames of the same size
