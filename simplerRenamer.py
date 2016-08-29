@@ -19,11 +19,12 @@ class SimpleRenamer:
         # Entry validation
         self.previous_bad_validation = False
         self.bad_chars = ['\\', '/', '¦', '*', '?', '"', '<', '>', '|']
-        vcmd = (master.register(self.onValidate), '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+        vcmd = (master.register(self.on_validate), '%S')
 
         # Initializing tabs and adding frames
         tabs = Notebook(master)
         rename_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
+        rename_tab.grid_rowconfigure(0, weight=1)
         tabs.add(rename_tab, text=self.TAB_NAMES[0])
         move_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
         tabs.add(move_tab, text=self.TAB_NAMES[1])
@@ -42,11 +43,12 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
-        self.label_txt_warn = Label(rename_tab, text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
+        self.label_txt_warn = Label(rename_tab,
+                                    text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
         self.label_blank = Label(rename_tab, text=" ")
         label_1 = Label(rename_tab, text="  Replace this:  ")
         label_2 = Label(rename_tab, text="  With this:  ")
-        self.entry_replace_this= Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
+        self.entry_replace_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
         self.entry_with_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
         checkbox_files = Checkbutton(rename_tab,
                                      text="Rename files",
@@ -80,14 +82,14 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2)
-        self.label_txt_warn.grid(columnspan=2, sticky=S)
-        self.label_txt_warn.grid_remove()  # label_txtWarn is only shown when an illegal character is entered
-        self.label_blank.grid(columnspan=2, sticky=S)
+        self.label_txt_warn.grid(columnspan=2, row=1, sticky=S)
+        self.label_txt_warn.grid_remove()  # label_txtWarn is only visible when an illegal character is entered
+        self.label_blank.grid(columnspan=2, row=1, sticky=S)
         label_1.grid(row=2, sticky=E)
         label_2.grid(row=3, sticky=E)
         self.entry_replace_this.grid(row=2, column=1)
         self.entry_with_this.grid(row=3, column=1)
-        checkbox_files.grid(columnspan=2)
+        checkbox_files.grid(columnspan=2, row=4)
         checkbox_subfiles.grid(columnspan=2)
         checkbox_dirs.grid(columnspan=2)
         checkbox_subdirs.grid(columnspan=2)
@@ -158,15 +160,20 @@ class SimpleRenamer:
     def check_rename_entries(self):
         if self.entry_replace_this != '':
             self.completed_items[1] = True
-            self.check_for_completion()
+        self.check_for_completion()
 
-    def onValidate(self, d, i, P, s, S, v, V, W):
+    def on_validate(self, s):
+        # INPUT: String input to entry
+        # OUTPUT: Returns true and sets self.previous_bad_validation = False if
+        #
+        # I put some label swapping and form completion logic here to save going nuts
         for character in self.bad_chars:
-            if S == character:
-                self.label_blank.grid_remove()
-                self.label_txt_warn.grid()
-                self.previous_bad_validation = True
-                return False
+            for substring in s:
+                if substring == character:
+                    self.label_blank.grid_remove()
+                    self.label_txt_warn.grid()
+                    self.previous_bad_validation = True
+                    return False
         if self.previous_bad_validation:
             self.label_txt_warn.grid_remove()
             self.label_blank.grid()
