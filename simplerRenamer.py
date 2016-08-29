@@ -26,7 +26,7 @@ class SimpleRenamer:
         tabs.grid()
 
         # "Rename Files" Tab - Variables
-        self.completed_items = [False, False, False, False] #choose dir, replacethis, withthis, >=1 checkbox
+        self.completed_items = [False, False, False, False]  # choose dir, replace this, with this, >=1 checkbox
         self.dir_path = StringVar()
         self.replace_this = StringVar()
         self.with_this = StringVar()
@@ -66,6 +66,10 @@ class SimpleRenamer:
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
         self.button_run_rename.bind('<Button-1>', self.run_rename)
+        checkbox_files.bind('<Button-1>', self.checkbox_complete)
+        checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
+        checkbox_subdirs.bind('<Button-1>', self.checkbox_complete)
+        checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2)
@@ -89,7 +93,11 @@ class SimpleRenamer:
         for item in self.completed_items:
             if not item:
                 return
-        self.button_run_rename.config(state = 'normal')
+        self.button_run_rename.config(state='normal')
+
+    def checkbox_complete(self, event):
+        if self.rename_files or self.rename_dirs or self.rename_subfiles or self.rename_subdirs:
+            self.completed_items[3] = True
 
     def choose_dir(self, event):
         # INPUT: Window and left click event
