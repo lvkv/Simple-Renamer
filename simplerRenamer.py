@@ -90,14 +90,26 @@ class SimpleRenamer:
         self.label.grid()
 
     def check_for_completion(self):
+        # INPUT: Nothing
+        # OUTPUT: If every element in self.completed_items is true, allows user to click "Run"
+        #
+        # Nothing much to say about this method
+
         for item in self.completed_items:
             if not item:
                 return
         self.button_run_rename.config(state='normal')
 
     def checkbox_complete(self, event):
+        # INPUT: Window and left click event
+        # OUTPUT: Marks a portion of the form complete if one or more boxes are checked
+        #
+        # No other elements use a check-if-this-form-element-is-complete method because that
+        # functionality is already inside their respective bound functions
+
         if self.rename_files or self.rename_dirs or self.rename_subfiles or self.rename_subdirs:
             self.completed_items[3] = True
+        self.check_for_completion()
 
     def choose_dir(self, event):
         # INPUT: Window and left click event
@@ -108,7 +120,8 @@ class SimpleRenamer:
         temp_dir = filedialog.askdirectory()
         if temp_dir != "":
             self.dir_path = temp_dir
-            self.completed_items = True
+            self.completed_items[0] = True
+        self.check_for_completion()
 
     def run_rename(self, event):
         # this is where the magic happens
@@ -127,7 +140,6 @@ class SimpleRenamer:
             self.label.configure(text="Find and replace words in file names")
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
-
 
 root = Tk()
 sr = SimpleRenamer(root)
