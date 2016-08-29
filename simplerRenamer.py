@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter.ttk import *
-# import sys
+# import sys #for shutil file moving
 import os
 
 
@@ -31,7 +31,7 @@ class SimpleRenamer:
         tabs.grid()
 
         # "Rename Files" Tab - Variables
-        self.completed_items = [False, False, False, False]  # choose dir, replace this, with this, >=1 checkbox
+        self.completed_items = [False, False, False]  # choose dir, replace this, >=1 checkbox
         self.dir_path = StringVar()
         self.replace_this = StringVar()
         self.with_this = StringVar()
@@ -46,8 +46,8 @@ class SimpleRenamer:
         self.label_blank = Label(rename_tab, text=" ")
         label_1 = Label(rename_tab, text="  Replace this:  ")
         label_2 = Label(rename_tab, text="  With this:  ")
-        entry_1 = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
-        entry_2 = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
+        self.entry_replace_this= Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
+        self.entry_with_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
         checkbox_files = Checkbutton(rename_tab,
                                      text="Rename files",
                                      variable=self.rename_files,
@@ -85,8 +85,8 @@ class SimpleRenamer:
         self.label_blank.grid(columnspan=2, sticky=S)
         label_1.grid(row=2, sticky=E)
         label_2.grid(row=3, sticky=E)
-        entry_1.grid(row=2, column=1)
-        entry_2.grid(row=3, column=1)
+        self.entry_replace_this.grid(row=2, column=1)
+        self.entry_with_this.grid(row=3, column=1)
         checkbox_files.grid(columnspan=2)
         checkbox_subfiles.grid(columnspan=2)
         checkbox_dirs.grid(columnspan=2)
@@ -116,7 +116,7 @@ class SimpleRenamer:
         # functionality is already inside their respective bound functions
 
         if self.rename_files or self.rename_dirs or self.rename_subfiles or self.rename_subdirs:
-            self.completed_items[3] = True
+            self.completed_items[2] = True
         self.check_for_completion()
 
     def choose_dir(self, event):
@@ -155,6 +155,11 @@ class SimpleRenamer:
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
 
+    def check_rename_entries(self):
+        if self.entry_replace_this != '':
+            self.completed_items[1] = True
+            self.check_for_completion()
+
     def onValidate(self, d, i, P, s, S, v, V, W):
         for character in self.bad_chars:
             if S == character:
@@ -166,6 +171,7 @@ class SimpleRenamer:
             self.label_txt_warn.grid_remove()
             self.label_blank.grid()
             self.previous_bad_validation = False
+        self.check_rename_entries()
         return True
 
 root = Tk()
