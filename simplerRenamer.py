@@ -11,7 +11,7 @@ class SimpleRenamer:
 
     # All tabs will contain frames of the same size
     FRAME_WIDTH = 400
-    FRAME_HEIGHT = 300
+    FRAME_HEIGHT = 200
 
     def __init__(self, master):
         master.title("Simple Rename")
@@ -24,7 +24,15 @@ class SimpleRenamer:
         # Initializing tabs and adding frames
         tabs = Notebook(master)
         rename_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
+
         rename_tab.grid_rowconfigure(0, weight=1)
+        rename_tab.grid_rowconfigure(2, weight=1)
+        rename_tab.grid_rowconfigure(3, weight=1)
+        rename_tab.grid_rowconfigure(4, weight=1)
+        rename_tab.grid_rowconfigure(5, weight=1)
+        rename_tab.grid_rowconfigure(6, weight=1)
+        rename_tab.grid_rowconfigure(7, weight=2)
+
         tabs.add(rename_tab, text=self.TAB_NAMES[0])
         move_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
         tabs.add(move_tab, text=self.TAB_NAMES[1])
@@ -89,11 +97,11 @@ class SimpleRenamer:
         label_2.grid(row=3, sticky=E)
         self.entry_replace_this.grid(row=2, column=1)
         self.entry_with_this.grid(row=3, column=1)
-        checkbox_files.grid(columnspan=2, row=4)
-        checkbox_subfiles.grid(columnspan=2)
-        checkbox_dirs.grid(columnspan=2)
-        checkbox_subdirs.grid(columnspan=2)
-        self.button_run_rename.grid(columnspan=2)
+        checkbox_files.grid(row=4, columnspan=2)
+        checkbox_subfiles.grid(row=5, columnspan=2)
+        checkbox_dirs.grid(row=6, columnspan=2)
+        checkbox_subdirs.grid(row=7, columnspan=2)
+        self.button_run_rename.grid(row=8, columnspan=2)
 
         # Text on bottom of window
         self.label = Label(master, text="")
@@ -104,9 +112,10 @@ class SimpleRenamer:
         # OUTPUT: If every element in self.completed_items is true, allows user to click "Run"
         #
         # Nothing much to say about this method
-
+        print(self.completed_items)
         for item in self.completed_items:
             if not item:
+                self.button_run_rename.config(state=DISABLED)
                 return
         self.button_run_rename.config(state='normal')
 
@@ -119,6 +128,8 @@ class SimpleRenamer:
 
         if self.rename_files or self.rename_dirs or self.rename_subfiles or self.rename_subdirs:
             self.completed_items[2] = True
+        else:
+            self.completed_items[2] = False
         self.check_for_completion()
 
     def choose_dir(self, event):
@@ -131,6 +142,8 @@ class SimpleRenamer:
         if temp_dir != "":
             self.dir_path = temp_dir
             self.completed_items[0] = True
+        else:
+            self.completed_items[0] = False
         self.check_for_completion()
 
     def run_rename(self, event):
@@ -141,7 +154,7 @@ class SimpleRenamer:
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
-        for file in os.walk():
+        for file in os.walk(self.dir_path):
             print(file)
 
     def cycle_frame_text(self, event):
@@ -153,13 +166,20 @@ class SimpleRenamer:
 
         tab_text = event.widget.tab(event.widget.index("current"), "text")
         if tab_text == self.TAB_NAMES[0]:  # "Rename Files"
-            self.label.configure(text="Find and replace words in file names")
+            self.label.configure(text="Find and replace phrases in file names")
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
 
     def check_rename_entries(self):
-        if self.entry_replace_this != '':
+        # INPUT: Nothing
+        # OUTPUT:
+        #
+        #
+
+        if self.entry_replace_this.get() != '':
             self.completed_items[1] = True
+        else:
+            self.completed_items[1] = False
         self.check_for_completion()
 
     def on_validate(self, s):
@@ -167,6 +187,7 @@ class SimpleRenamer:
         # OUTPUT: Returns true and sets self.previous_bad_validation = False if
         #
         # I put some label swapping and form completion logic here to save going nuts
+
         for character in self.bad_chars:
             for substring in s:
                 if substring == character:
