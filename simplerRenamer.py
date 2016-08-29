@@ -16,6 +16,11 @@ class SimpleRenamer:
     def __init__(self, master):
         master.title("Simple Renamer")
 
+        # Entry validation
+        self.bad_chars = ['\\', '/', '¦', '*', '?', '"', '<', '>', '|']
+        vcmd = (master.register(self.onValidate),
+                '%d', '%i', '%P', '%s', '%S', '%v', '%V', '%W')
+
         # Initializing tabs and adding frames
         tabs = Notebook(master)
         rename_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
@@ -37,17 +42,18 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
-        label_txt_warn = Label(rename_tab, text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
+        self.label_txt_warn = Label(rename_tab, text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
         label_1 = Label(rename_tab, text="  Replace this:  ")
         label_2 = Label(rename_tab, text="  With this:  ")
-        entry_1 = Entry(rename_tab, width=50)
-        entry_2 = Entry(rename_tab, width=50)
+        entry_1 = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
+        entry_2 = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
         checkbox_files = Checkbutton(rename_tab,
                                      text="Rename files",
                                      variable=self.rename_files,
                                      onvalue=True,
                                      offvalue=False)
-        checkbox_subfiles = Checkbutton(rename_tab, text="Rename subdirectory files",
+        checkbox_subfiles = Checkbutton(rename_tab,
+                                        text="Rename subdirectory files",
                                         variable=self.rename_subfiles,
                                         onvalue=True,
                                         offvalue=False)
@@ -73,8 +79,8 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2)
-        label_txt_warn.grid(columnspan=2, sticky=S)  # label_txtWarn is only shown when an illegal character is entered
-        label_txt_warn.grid_remove()
+        self.label_txt_warn.grid(columnspan=2, sticky=S)
+        self.label_txt_warn.grid_remove()  # label_txtWarn is only shown when an illegal character is entered
         label_1.grid(row=2, sticky=E)
         label_2.grid(row=3, sticky=E)
         entry_1.grid(row=2, column=1)
@@ -140,6 +146,13 @@ class SimpleRenamer:
             self.label.configure(text="Find and replace words in file names")
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
+
+    def onValidate(self, d, i, P, s, S, v, V, W):
+        for character in self.bad_chars:
+            if S == character:
+                self.label_txt_warn.grid()
+                return False
+        return True
 
 root = Tk()
 sr = SimpleRenamer(root)
