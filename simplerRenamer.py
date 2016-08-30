@@ -83,8 +83,8 @@ class SimpleRenamer:
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
         self.button_run_rename.bind('<Button-1>', self.run_rename)
-        self.entry_replace_this.bind('<KeyPress>', self.check_rename_entries)
-        self.entry_with_this.bind('<KeyPress>', self.check_rename_entries)
+        self.entry_replace_this.bind('<KeyRelease>', self.check_rename_entries)
+        self.entry_with_this.bind('<KeyRelease>', self.check_rename_entries)
         checkbox_files.bind('<Button-1>', self.checkbox_complete)
         checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
         checkbox_subdirs.bind('<Button-1>', self.checkbox_complete)
@@ -177,7 +177,7 @@ class SimpleRenamer:
         # OUTPUT:
         #
         #
-
+        print(self.entry_replace_this.get())
         if self.entry_replace_this.get() != '':
             self.completed_items[1] = True
         else:
