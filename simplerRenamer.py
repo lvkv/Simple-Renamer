@@ -114,7 +114,7 @@ class SimpleRenamer:
         # OUTPUT: If every element in self.completed_items is true, allows user to click "Run"
         #
         # Nothing much to say about this method
-        print(self.completed_items)
+
         for item in self.completed_items:
             if not item:
                 self.button_run_rename.config(state=DISABLED)
@@ -156,8 +156,10 @@ class SimpleRenamer:
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
-        for file in os.walk(self.dir_path):
-            print(file)
+        for tup in os.walk(self.dir_path):
+            for lst in tup:
+                for file in lst:
+                    print(file)
 
     def cycle_frame_text(self, event):
         # INPUT: Window and <<NotebookTabChanged>> event
@@ -177,7 +179,7 @@ class SimpleRenamer:
         # OUTPUT:
         #
         #
-        print(self.entry_replace_this.get())
+
         if self.entry_replace_this.get() != '':
             self.completed_items[1] = True
         else:
