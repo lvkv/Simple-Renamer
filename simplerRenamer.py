@@ -156,10 +156,14 @@ class SimpleRenamer:
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
-        for tup in os.walk(self.dir_path):
-            for lst in tup:
-                for file in lst:
-                    print(file)
+        if self.rename_subdirs or self.rename_subfiles:  # Only doing root directory
+            for file in os.scandir(self.dir_path):
+                #do stuff
+        else:  # Doing subdirectories     
+            for tup in os.walk(self.dir_path):
+                for lst in tup:
+                    for file in lst:
+                        print(file)
 
     def cycle_frame_text(self, event):
         # INPUT: Window and <<NotebookTabChanged>> event
