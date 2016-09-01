@@ -199,12 +199,29 @@ class SimpleRenamer:
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (self.rename_files.get() and os.path.isfile(file)):
                     os.rename(file, (self.dir_path.get()+"\\"+(f.name.replace(self.replace_this.get(), self.with_this.get()))))
             self.popup_window("File/directory rename successful.")
+        else:  # Doing subdirectories
+            for path, dirs, files in os.walk(self.dir_path.get()):
+                if self.rename_files and path == self.dir_path.get():
+                    for file in files:
+                        full_path = path + "\\" + file
+                        modified_path = path + "\\" + file.replace(self.replace_this.get(), self.with_this.get())
+                        os.rename(full_path, modified_path)
+                if self.rename_subfiles and path != self.dir_path.get():
+                    for file in files:
+                        full_path = path + "\\" + file
+                        modified_path = path + "\\" + file.replace(self.replace_this.get(), self.with_this.get())
+                        os.rename(full_path, modified_path)
+                if self.rename_dirs and path == self.dir_path.get():
+                    for dir in dirs:
+                        full_path = path + "\\" + dir
+                        modified_path = path + "\\" + dir.replace(self.replace_this.get(), self.with_this.get())
+                        os.rename(full_path, modified_path)
+                if self.rename_subdirs and path != self.dir_path.get():
+                    for dir in dirs:
+                        full_path = path + "\\" + dir
+                        modified_path = path + "\\" + dir.replace(self.replace_this.get(), self.with_this.get())
+                        os.rename(full_path, modified_path)
 
-        else:  # Doing subdirectories     
-            for tup in os.walk(self.dir_path):
-                for lst in tup:
-                    for file in lst:
-                        print(file)
 
     def cycle_frame_text(self, event):
         # INPUT: Window and <<NotebookTabChanged>> event
@@ -252,7 +269,7 @@ class SimpleRenamer:
     def popup_window(self, message):
         top_level = Toplevel()
         message_label = Label(top_level, text=message)
-        message_label.grid()
+        message_label.grid(padx=(10, 10), pady=(10, 10))
 
     def on_validate(self, s):
         # INPUT: String input to entry
