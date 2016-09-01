@@ -130,12 +130,7 @@ class SimpleRenamer:
         # OUTPUT: If every element in self.completed_items is true, allows user to click "Run"
         #
         # Nothing much to say about this method
-        #print(self.completed_items)
-        #if self.rename_files.get() or self.rename_subfiles.get() or self.rename_dirs.get() or self.rename_subdirs.get():
-        #    self.completed_items[2] = True
-        #else:
-            #self.completed_items[2] = False
-        print(self.completed_items)
+
         for item in self.completed_items:
             if not item:
                 self.button_run_rename.config(state=DISABLED)
