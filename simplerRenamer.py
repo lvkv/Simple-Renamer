@@ -106,17 +106,16 @@ class SimpleRenamer:
         self.checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
 
         # "Rename Files" Tab - Gridding GUI elements
-        button_dir.grid(columnspan=2)
+        button_dir.grid(columnspan=2, pady=(10, 0))
 
         self.rename_frame.grid(columnspan=2)
         self.label_txt_warn.grid(columnspan=2, row=1, sticky=S)
         self.label_txt_warn.grid_remove()  # label_txtWarn is only visible when an illegal character is entered
         self.label_blank.grid(columnspan=2, row=1, sticky=S)
-        label_1.grid(row=2, sticky=E)
-        label_2.grid(row=3, sticky=E)
-
-        self.entry_replace_this.grid(row=2, column=1)
-        self.entry_with_this.grid(row=3, column=1)
+        label_1.grid(row=2, sticky=E, pady=(0, 10))
+        label_2.grid(row=3, sticky=E, pady=(0, 20))
+        self.entry_replace_this.grid(row=2, column=1, pady=(0, 10))
+        self.entry_with_this.grid(row=3, column=1, pady=(0, 20))
 
         self.rename_options_frame.grid(columnspan=2)
         self.checkbox_files.grid(row=4, columnspan=2)
