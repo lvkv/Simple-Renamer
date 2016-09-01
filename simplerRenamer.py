@@ -55,6 +55,14 @@ class SimpleRenamer:
         self.rename_subdirs = BooleanVar()
         self.rename_subdirs.set(False)
 
+        # "Move Files" Tab - Variables
+        self.completed_move_items = []
+        self.dir_path_move = StringVar()
+        self.starts_with = StringVar()
+        self.ends_with = StringVar()
+        self.contains = StringVar()
+        self.move_files_here = StringVar()
+
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
 
