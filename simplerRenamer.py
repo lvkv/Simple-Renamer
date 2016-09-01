@@ -84,8 +84,8 @@ class SimpleRenamer:
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
         self.button_run_rename.bind('<Button-1>', self.run_rename)
-        self.entry_replace_this.bind('<KeyRelease>', self.check_rename_entries)
-        self.entry_with_this.bind('<KeyRelease>', self.check_rename_entries)
+        self.entry_replace_this.bind('<KeyRelease>', self.update_replace_this)
+        self.entry_with_this.bind('<KeyRelease>', self.update_with_this)
         self.checkbox_files.bind('<Button-1>', self.checkbox_complete)
         self.checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
         self.checkbox_subdirs.bind('<Button-1>', self.checkbox_complete)
@@ -157,11 +157,13 @@ class SimpleRenamer:
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
-        print("GOT HERE")
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
+
             for file in os.scandir(self.dir_path):
+                print(self.rename_dirs.get(), " ", os.path.isdir(file.name))
                 if (self.rename_dirs.get() and os.path.isdir(file.name)) or (self.rename_files.get() and os.path.isfile(file.name)):
-                    os.rename(file.name, file.name.replace(self.replace_this, self.with_this))
+
+                    os.rename(file.name, file.name.replace(self.replace_this.get(), self.with_this.get()))
         else:  # Doing subdirectories     
             for tup in os.walk(self.dir_path):
                 for lst in tup:
@@ -181,8 +183,17 @@ class SimpleRenamer:
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
 
+    def update_replace_this(self, event):
+        self.check_rename_entries(event)
+        self.replace_this.set(self.entry_replace_this.get())
+        print(self.replace_this.get())
+
+    def update_with_this(self, event):
+        self.check_rename_entries(event)
+        self.with_this.set(self.entry_with_this.get())
+
     def check_rename_entries(self, event):
-        # INPUT: Nothing
+        # INPUT: <Key-Released> event
         # OUTPUT:
         #
         #
