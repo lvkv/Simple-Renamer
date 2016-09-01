@@ -20,7 +20,7 @@ class SimpleRenamer:
 
     # All tabs will contain frames of the same size
     FRAME_WIDTH = 400
-    FRAME_HEIGHT = 200
+    FRAME_HEIGHT = 250
 
     def __init__(self, master):
         master.title("Simple Rename")
@@ -61,29 +61,33 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
-        self.label_txt_warn = Label(rename_tab,
+
+        self.rename_frame = LabelFrame(rename_tab, text="Find and Replace")
+        self.label_txt_warn = Label(self.rename_frame,
                                     text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
-        self.label_blank = Label(rename_tab, text=" ")
-        label_1 = Label(rename_tab, text="  Replace this:  ")
-        label_2 = Label(rename_tab, text="  With this:  ")
-        self.entry_replace_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
-        self.entry_with_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
-        self.checkbox_files = Checkbutton(rename_tab,
+        self.label_blank = Label(self.rename_frame, text=" ")
+        label_1 = Label(self.rename_frame, text="  Replace this:  ")
+        label_2 = Label(self.rename_frame, text="  With this:  ")
+        self.entry_replace_this = Entry(self.rename_frame, width=50, validate="key", validatecommand=vcmd)
+        self.entry_with_this = Entry(self.rename_frame, width=50, validate="key", validatecommand=vcmd)
+
+        self.rename_options_frame = LabelFrame(rename_tab, text="Options")
+        self.checkbox_files = Checkbutton(self.rename_options_frame,
                                           text="Rename files",
                                           onvalue=True,
                                           offvalue=False,
                                           variable=self.rename_files)
-        self.checkbox_subfiles = Checkbutton(rename_tab,
+        self.checkbox_subfiles = Checkbutton(self.rename_options_frame,
                                              text="Rename subdirectory files",
                                              onvalue=True,
                                              offvalue=False,
                                              variable=self.rename_subfiles)
-        self.checkbox_dirs = Checkbutton(rename_tab,
+        self.checkbox_dirs = Checkbutton(self.rename_options_frame,
                                          text="Rename directories",
                                          onvalue=True,
                                          offvalue=False,
                                          variable=self.rename_dirs)
-        self.checkbox_subdirs = Checkbutton(rename_tab,
+        self.checkbox_subdirs = Checkbutton(self.rename_options_frame,
                                             text="Rename subdirectories",
                                             onvalue=True,
                                             offvalue=False,
@@ -102,6 +106,8 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2)
+
+        self.rename_frame.grid(columnspan=2)
         self.label_txt_warn.grid(columnspan=2, row=1, sticky=S)
         self.label_txt_warn.grid_remove()  # label_txtWarn is only visible when an illegal character is entered
         self.label_blank.grid(columnspan=2, row=1, sticky=S)
@@ -109,6 +115,8 @@ class SimpleRenamer:
         label_2.grid(row=3, sticky=E)
         self.entry_replace_this.grid(row=2, column=1)
         self.entry_with_this.grid(row=3, column=1)
+
+        self.rename_options_frame.grid(columnspan=2)
         self.checkbox_files.grid(row=4, columnspan=2)
         self.checkbox_subfiles.grid(row=5, columnspan=2)
         self.checkbox_dirs.grid(row=6, columnspan=2)
