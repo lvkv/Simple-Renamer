@@ -211,6 +211,17 @@ class SimpleRenamer:
             self.completed_items[1] = False
         self.check_for_completion()
 
+    def flip_warnings(self, on_top):
+        if on_top:
+            self.label_blank.grid_remove()
+            self.label_txt_warn.grid()
+            self.previous_bad_validation = True
+        else:
+            self.label_txt_warn.grid_remove()
+            self.label_blank.grid()
+            self.previous_bad_validation = False
+
+
     def on_validate(self, s):
         # INPUT: String input to entry
         # OUTPUT: Returns true and sets self.previous_bad_validation = False if
@@ -220,14 +231,10 @@ class SimpleRenamer:
         for character in self.bad_chars:
             for substring in s:
                 if substring == character:
-                    self.label_blank.grid_remove()
-                    self.label_txt_warn.grid()
-                    self.previous_bad_validation = True
+                    self.flip_warnings(True)
                     return False
         if self.previous_bad_validation:
-            self.label_txt_warn.grid_remove()
-            self.label_blank.grid()
-            self.previous_bad_validation = False
+            self.flip_warnings(False)
         return True
 
 
