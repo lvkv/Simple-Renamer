@@ -113,6 +113,7 @@ class SimpleRenamer:
         self.label_blank.grid(columnspan=2, row=1, sticky=S)
         label_1.grid(row=2, sticky=E)
         label_2.grid(row=3, sticky=E)
+
         self.entry_replace_this.grid(row=2, column=1)
         self.entry_with_this.grid(row=3, column=1)
 
