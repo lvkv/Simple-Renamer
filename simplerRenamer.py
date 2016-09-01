@@ -197,7 +197,8 @@ class SimpleRenamer:
             for f in os.scandir(self.dir_path.get()):
                 file = self.dir_path.get() + "\\" + f.name
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (self.rename_files.get() and os.path.isfile(file)):
-                    os.rename(file, (self.dir_path.get()+"\\"+(f.name.replace(self.replace_this.get(), self.with_this.get()))))
+                    mod = self.dir_path.get() + "\\" + f.name.replace(self.replace_this.get(), self.with_this.get())
+                    os.rename(file, mod)
             self.popup_window("File/directory rename successful.")
         else:  # Doing subdirectories
             for path, dirs, files in os.walk(self.dir_path.get()):
