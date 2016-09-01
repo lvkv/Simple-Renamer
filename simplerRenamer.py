@@ -65,7 +65,7 @@ class SimpleRenamer:
 
         self.rename_frame = LabelFrame(rename_tab, text="Find and Replace")
         self.label_txt_warn = Label(self.rename_frame,
-                                    text='''Remember, a file/directory name can't contain:  \ / ¦ * ? " < > |''')
+                                    text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
         self.label_blank = Label(self.rename_frame, text=" ")
         label_1 = Label(self.rename_frame, text="  Replace this:  ")
         label_2 = Label(self.rename_frame, text="  With this:  ")
@@ -197,7 +197,7 @@ class SimpleRenamer:
 
         tab_text = event.widget.tab(event.widget.index("current"), "text")
         if tab_text == self.TAB_NAMES[0]:  # "Rename Files"
-            self.label.configure(text="Find and replace phrases in file names")
+            self.label.configure(text="Find and replace phrases in file/directory names")
         elif tab_text == "Move Files":  # "Move Files"
             self.label.configure(text="Move select files to specified folders")
 
