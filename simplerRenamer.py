@@ -35,14 +35,6 @@ class SimpleRenamer:
         tabs = Notebook(master)
         rename_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
 
-        rename_tab.grid_rowconfigure(0, weight=1)
-        rename_tab.grid_rowconfigure(2, weight=1)
-        rename_tab.grid_rowconfigure(3, weight=1)
-        rename_tab.grid_rowconfigure(4, weight=1)
-        rename_tab.grid_rowconfigure(5, weight=1)
-        rename_tab.grid_rowconfigure(6, weight=1)
-        rename_tab.grid_rowconfigure(7, weight=2)
-
         tabs.add(rename_tab, text=self.TAB_NAMES[0])
         move_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
         tabs.add(move_tab, text=self.TAB_NAMES[1])
@@ -66,6 +58,7 @@ class SimpleRenamer:
         self.rename_frame = LabelFrame(rename_tab, text="Find and Replace")
         self.label_txt_warn = Label(self.rename_frame,
                                     text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
+        self.label_txt_warn.config(foreground='red')
         self.label_blank = Label(self.rename_frame, text=" ")
         label_1 = Label(self.rename_frame, text="  Replace this:  ")
         label_2 = Label(self.rename_frame, text="  With this:  ")
@@ -109,9 +102,9 @@ class SimpleRenamer:
         button_dir.grid(columnspan=2, pady=(10, 0))
 
         self.rename_frame.grid(columnspan=2, padx=(5, 0))
-        self.label_txt_warn.grid(columnspan=2, row=1, sticky=S)
+        self.label_txt_warn.grid(columnspan=2, row=1, pady=(0, 5), sticky=S)
         self.label_txt_warn.grid_remove()  # label_txtWarn is only visible when an illegal character is entered
-        self.label_blank.grid(columnspan=2, row=1, sticky=S)
+        self.label_blank.grid(columnspan=2, row=1, pady=(0, 5), sticky=S)
         label_1.grid(row=2, sticky=E, pady=(0, 10))
         label_2.grid(row=3, sticky=E, pady=(0, 20))
         self.entry_replace_this.grid(row=2, column=1, pady=(0, 10))
@@ -123,7 +116,7 @@ class SimpleRenamer:
         self.checkbox_dirs.grid(row=6, column=0, sticky=W)
         self.checkbox_subdirs.grid(row=7, column=0, sticky=W)
 
-        self.button_run_rename.grid(row=8, columnspan=2)
+        self.button_run_rename.grid(column=1)
 
         # Text on bottom of window
         self.label = Label(master, text="")
@@ -230,7 +223,6 @@ class SimpleRenamer:
             self.label_txt_warn.grid_remove()
             self.label_blank.grid()
             self.previous_bad_validation = False
-
 
     def on_validate(self, s):
         # INPUT: String input to entry
