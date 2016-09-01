@@ -47,13 +47,13 @@ class SimpleRenamer:
         self.replace_this = StringVar()
         self.with_this = StringVar()
         self.rename_files = BooleanVar()
-        self.rename_files.set(True)
+        #self.rename_files.set(False)
         self.rename_subfiles = BooleanVar()
-        self.rename_subfiles.set(False)
+        #self.rename_subfiles.set(False)
         self.rename_dirs = BooleanVar()
-        self.rename_dirs.set(False)
+        #self.rename_dirs.set(False)
         self.rename_subdirs = BooleanVar()
-        self.rename_subdirs.set(False)
+        #self.rename_subdirs.set(False)
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
@@ -98,8 +98,8 @@ class SimpleRenamer:
         self.entry_with_this.bind('<KeyRelease>', self.update_with_this)
         self.checkbox_files.bind('<ButtonRelease-1>', self.checkbox_complete)
         self.checkbox_subfiles.bind('<ButtonRelease-1>', self.checkbox_complete)
+        self.checkbox_dirs.bind('<ButtonRelease-1>', self.checkbox_complete)
         self.checkbox_subdirs.bind('<ButtonRelease-1>', self.checkbox_complete)
-        self.checkbox_subfiles.bind('<ButtonRelease-1>', self.checkbox_complete)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
@@ -130,7 +130,7 @@ class SimpleRenamer:
         # OUTPUT: If every element in self.completed_items is true, allows user to click "Run"
         #
         # Nothing much to say about this method
-        print(self.completed_items)
+        #print(self.completed_items)
         for item in self.completed_items:
             if not item:
                 self.button_run_rename.config(state=DISABLED)
@@ -143,7 +143,7 @@ class SimpleRenamer:
         #
         # No other elements use a check-if-this-form-element-is-complete method because that
         # functionality is already inside their respective bound functions
-
+        print(self.rename_files.get(), self.rename_dirs.get(), self.rename_subdirs.get(), self.rename_subfiles.get())
         if self.rename_files.get() or self.rename_dirs.get() or self.rename_subfiles.get() or self.rename_subdirs.get():
             self.completed_items[2] = True
         else:
