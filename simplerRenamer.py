@@ -45,9 +45,10 @@ class SimpleRenamer:
         self.replace_this = StringVar()
         self.with_this = StringVar()
         self.rename_files = BooleanVar()
+        self.rename_files.set(True)
+        self.rename_subfiles = BooleanVar()
         self.rename_dirs = BooleanVar()
         self.rename_subdirs = BooleanVar()
-        self.rename_subfiles = BooleanVar()
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
@@ -58,26 +59,26 @@ class SimpleRenamer:
         label_2 = Label(rename_tab, text="  With this:  ")
         self.entry_replace_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
         self.entry_with_this = Entry(rename_tab, width=50, validate="key", validatecommand=vcmd)
-        checkbox_files = Checkbutton(rename_tab,
-                                     text="Rename files",
-                                     variable=self.rename_files,
-                                     onvalue=True,
-                                     offvalue=False)
-        checkbox_subfiles = Checkbutton(rename_tab,
-                                        text="Rename subdirectory files",
-                                        variable=self.rename_subfiles,
-                                        onvalue=True,
-                                        offvalue=False)
-        checkbox_dirs = Checkbutton(rename_tab,
-                                    text="Rename directories",
-                                    variable=self.rename_dirs,
-                                    onvalue=True,
-                                    offvalue=False)
-        checkbox_subdirs = Checkbutton(rename_tab,
-                                       text="Rename subdirectories",
-                                       variable=self.rename_subdirs,
-                                       onvalue=True,
-                                       offvalue=False)
+        self.checkbox_files = Checkbutton(rename_tab,
+                                          text="Rename files",
+                                          onvalue=True,
+                                          offvalue=False,
+                                          variable=self.rename_files)
+        self.checkbox_subfiles = Checkbutton(rename_tab,
+                                             text="Rename subdirectory files",
+                                             onvalue=True,
+                                             offvalue=False,
+                                             variable=self.rename_subfiles)
+        self.checkbox_dirs = Checkbutton(rename_tab,
+                                         text="Rename directories",
+                                         onvalue=True,
+                                         offvalue=False,
+                                         variable=self.rename_dirs)
+        self.checkbox_subdirs = Checkbutton(rename_tab,
+                                            text="Rename subdirectories",
+                                            onvalue=True,
+                                            offvalue=False,
+                                            variable=self.rename_subdirs)
         self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
@@ -85,10 +86,10 @@ class SimpleRenamer:
         self.button_run_rename.bind('<Button-1>', self.run_rename)
         self.entry_replace_this.bind('<KeyRelease>', self.check_rename_entries)
         self.entry_with_this.bind('<KeyRelease>', self.check_rename_entries)
-        checkbox_files.bind('<Button-1>', self.checkbox_complete)
-        checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
-        checkbox_subdirs.bind('<Button-1>', self.checkbox_complete)
-        checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
+        self.checkbox_files.bind('<Button-1>', self.checkbox_complete)
+        self.checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
+        self.checkbox_subdirs.bind('<Button-1>', self.checkbox_complete)
+        self.checkbox_subfiles.bind('<Button-1>', self.checkbox_complete)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2)
@@ -99,10 +100,10 @@ class SimpleRenamer:
         label_2.grid(row=3, sticky=E)
         self.entry_replace_this.grid(row=2, column=1)
         self.entry_with_this.grid(row=3, column=1)
-        checkbox_files.grid(row=4, columnspan=2)
-        checkbox_subfiles.grid(row=5, columnspan=2)
-        checkbox_dirs.grid(row=6, columnspan=2)
-        checkbox_subdirs.grid(row=7, columnspan=2)
+        self.checkbox_files.grid(row=4, columnspan=2)
+        self.checkbox_subfiles.grid(row=5, columnspan=2)
+        self.checkbox_dirs.grid(row=6, columnspan=2)
+        self.checkbox_subdirs.grid(row=7, columnspan=2)
         self.button_run_rename.grid(row=8, columnspan=2)
 
         # Text on bottom of window
@@ -156,10 +157,11 @@ class SimpleRenamer:
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
-        if self.rename_subdirs or self.rename_subfiles:  # Only doing root directory
+        print("GOT HERE")
+        if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
             for file in os.scandir(self.dir_path):
-                if (self.rename_dirs and os.path.isdir(file)) or (self.rename_files and os.path.isfile(file)):
-                    os.rename(file, file.replace(self.replace_this, self.with_this))
+                if (self.rename_dirs.get() and os.path.isdir(file.name)) or (self.rename_files.get() and os.path.isfile(file.name)):
+                    os.rename(file.name, file.name.replace(self.replace_this, self.with_this))
         else:  # Doing subdirectories     
             for tup in os.walk(self.dir_path):
                 for lst in tup:
@@ -210,6 +212,8 @@ class SimpleRenamer:
             self.previous_bad_validation = False
         return True
 
+
 root = Tk()
+yolo = True
 sr = SimpleRenamer(root)
 root.mainloop()
