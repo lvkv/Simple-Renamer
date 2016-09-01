@@ -47,13 +47,13 @@ class SimpleRenamer:
         self.replace_this = StringVar()
         self.with_this = StringVar()
         self.rename_files = BooleanVar()
-        #self.rename_files.set(False)
+        self.rename_files.set(False)
         self.rename_subfiles = BooleanVar()
-        #self.rename_subfiles.set(False)
+        self.rename_subfiles.set(False)
         self.rename_dirs = BooleanVar()
-        #self.rename_dirs.set(False)
+        self.rename_dirs.set(False)
         self.rename_subdirs = BooleanVar()
-        #self.rename_subdirs.set(False)
+        self.rename_subdirs.set(False)
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
@@ -96,10 +96,10 @@ class SimpleRenamer:
         self.button_run_rename.bind('<Button-1>', self.run_rename)
         self.entry_replace_this.bind('<KeyRelease>', self.update_replace_this)
         self.entry_with_this.bind('<KeyRelease>', self.update_with_this)
-        self.checkbox_files.bind('<ButtonRelease-1>', self.checkbox_complete)
-        self.checkbox_subfiles.bind('<ButtonRelease-1>', self.checkbox_complete)
-        self.checkbox_dirs.bind('<ButtonRelease-1>', self.checkbox_complete)
-        self.checkbox_subdirs.bind('<ButtonRelease-1>', self.checkbox_complete)
+        self.checkbox_files.bind('<ButtonRelease-1>', self.set_rename_files)
+        self.checkbox_subfiles.bind('<ButtonRelease-1>', self.set_rename_subfiles)
+        self.checkbox_dirs.bind('<ButtonRelease-1>', self.set_rename_dirs)
+        self.checkbox_subdirs.bind('<ButtonRelease-1>', self.set_rename_subdirs)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
@@ -131,11 +131,36 @@ class SimpleRenamer:
         #
         # Nothing much to say about this method
         #print(self.completed_items)
+        #if self.rename_files.get() or self.rename_subfiles.get() or self.rename_dirs.get() or self.rename_subdirs.get():
+        #    self.completed_items[2] = True
+        #else:
+            #self.completed_items[2] = False
+        print(self.completed_items)
         for item in self.completed_items:
             if not item:
                 self.button_run_rename.config(state=DISABLED)
                 return
         self.button_run_rename.config(state='normal')
+
+    def set_rename_files(self, event):
+        self.rename_files.set(not self.rename_files.get())
+        self.checkbox_complete(event)
+        self.rename_files.set(not self.rename_files.get())
+
+    def set_rename_subfiles(self, event):
+        self.rename_subfiles.set(not self.rename_subfiles.get())
+        self.checkbox_complete(event)
+        self.rename_subfiles.set(not self.rename_subfiles.get())
+
+    def set_rename_dirs(self, event):
+        self.rename_dirs.set(not self.rename_dirs.get())
+        self.checkbox_complete(event)
+        self.rename_dirs.set(not self.rename_dirs.get())
+
+    def set_rename_subdirs(self, event):
+        self.rename_subdirs.set(not self.rename_subdirs.get())
+        self.checkbox_complete(event)
+        self.rename_subdirs.set(not self.rename_subdirs.get())
 
     def checkbox_complete(self, event):
         # INPUT: Window and left click event
@@ -143,7 +168,7 @@ class SimpleRenamer:
         #
         # No other elements use a check-if-this-form-element-is-complete method because that
         # functionality is already inside their respective bound functions
-        print(self.rename_files.get(), self.rename_dirs.get(), self.rename_subdirs.get(), self.rename_subfiles.get())
+
         if self.rename_files.get() or self.rename_dirs.get() or self.rename_subfiles.get() or self.rename_subdirs.get():
             self.completed_items[2] = True
         else:
