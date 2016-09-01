@@ -149,16 +149,17 @@ class SimpleRenamer:
         self.check_for_completion()
 
     def run_rename(self, event):
-        # INPUT:
+        # INPUT: <Button-1> left mouse click event
         # OUTPUT:
         #
-        # First if statement prevents running if user clicks on disabled button (why is that allowed?)
+        # First if statement prevents execution if user clicks on button in disabled state (why is that allowed?)
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
         if self.rename_subdirs or self.rename_subfiles:  # Only doing root directory
             for file in os.scandir(self.dir_path):
-                #do stuff
+                if (self.rename_dirs and os.path.isdir(file)) or (self.rename_files and os.path.isfile(file)):
+                    os.rename(file, file.replace(self.replace_this, self.with_this))
         else:  # Doing subdirectories     
             for tup in os.walk(self.dir_path):
                 for lst in tup:
