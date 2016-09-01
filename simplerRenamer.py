@@ -203,26 +203,19 @@ class SimpleRenamer:
         else:  # Doing subdirectories
             for path, dirs, files in os.walk(self.dir_path.get()):
                 if self.rename_files and path == self.dir_path.get():
-                    for file in files:
-                        full_path = path + "\\" + file
-                        modified_path = path + "\\" + file.replace(self.replace_this.get(), self.with_this.get())
-                        os.rename(full_path, modified_path)
+                    self.walk_rename(files, path)
                 if self.rename_subfiles and path != self.dir_path.get():
-                    for file in files:
-                        full_path = path + "\\" + file
-                        modified_path = path + "\\" + file.replace(self.replace_this.get(), self.with_this.get())
-                        os.rename(full_path, modified_path)
+                    self.walk_rename(files, path)
                 if self.rename_dirs and path == self.dir_path.get():
-                    for dir in dirs:
-                        full_path = path + "\\" + dir
-                        modified_path = path + "\\" + dir.replace(self.replace_this.get(), self.with_this.get())
-                        os.rename(full_path, modified_path)
+                    self.walk_rename(dirs, path)
                 if self.rename_subdirs and path != self.dir_path.get():
-                    for dir in dirs:
-                        full_path = path + "\\" + dir
-                        modified_path = path + "\\" + dir.replace(self.replace_this.get(), self.with_this.get())
-                        os.rename(full_path, modified_path)
+                    self.walk_rename(dirs, path)
 
+    def walk_rename(self, iterator, path):
+        for item in iterator:
+            full_path = path + "\\" + item
+            modified_path = path + "\\" + item.replace(self.replace_this.get(), self.with_this.get())
+            os.rename(full_path, modified_path)
 
     def cycle_frame_text(self, event):
         # INPUT: Window and <<NotebookTabChanged>> event
