@@ -154,16 +154,15 @@ class SimpleRenamer:
         # OUTPUT:
         #
         # First if statement prevents execution if user clicks on button in disabled state (why is that allowed?)
+        # This is the functional part of the "Rename Files" tab. The part that actually does stuff.
 
         if str(self.button_run_rename['state']) == 'disabled':
             return
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
-
-            for file in os.scandir(self.dir_path):
-                print(self.rename_dirs.get(), " ", os.path.isdir(file.name))
-                if (self.rename_dirs.get() and os.path.isdir(file.name)) or (self.rename_files.get() and os.path.isfile(file.name)):
-
-                    os.rename(file.name, file.name.replace(self.replace_this.get(), self.with_this.get()))
+            for f in os.scandir(self.dir_path):
+                file = self.dir_path + "\\" + f.name
+                if (self.rename_dirs.get() and os.path.isdir(file)) or (self.rename_files.get() and os.path.isfile(file)):
+                    os.rename(file, file.replace(self.replace_this.get(), self.with_this.get()))
         else:  # Doing subdirectories     
             for tup in os.walk(self.dir_path):
                 for lst in tup:
