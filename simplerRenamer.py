@@ -24,6 +24,7 @@ class SimpleRenamer:
 
     def __init__(self, master):
         master.title("Simple Rename")
+        master.resizable(0, 0)
 
         # Entry validation
         self.previous_bad_validation = False
