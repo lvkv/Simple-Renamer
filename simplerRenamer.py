@@ -143,7 +143,7 @@ class SimpleRenamer:
 
         temp_dir = filedialog.askdirectory()
         if temp_dir != "":
-            self.dir_path = temp_dir
+            self.dir_path.set(temp_dir)
             self.completed_items[0] = True
         else:
             self.completed_items[0] = False
@@ -159,8 +159,9 @@ class SimpleRenamer:
         if str(self.button_run_rename['state']) == 'disabled':
             return
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
-            for f in os.scandir(self.dir_path):
-                file = self.dir_path + "\\" + f.name
+            for f in os.scandir(self.dir_path.get()):
+                file = self.dir_path.get() + "\\" + f.name
+                print(file)
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (self.rename_files.get() and os.path.isfile(file)):
                     os.rename(file, file.replace(self.replace_this.get(), self.with_this.get()))
         else:  # Doing subdirectories     
