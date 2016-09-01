@@ -1,12 +1,21 @@
-from tkinter import *
+# Simple Script
+# Lukas Velikov
+#
+# Simple Script is a GUI app designed to make quick and simple mass file renames and relocations possible to clients
+# without scripting experience. Built using Python's Tkinter package. Included imports for Python 2.x, but not tested.
+
+try:
+    from tkinter import *  # Python 3.x
+except ImportError:
+    from Tkinter import *  # Python 2.x
 from tkinter import filedialog
 from tkinter.ttk import *
-# import sys #for shutil file moving
+# import sys #for shutil file moves
 import os
 
 
 class SimpleRenamer:
-    # To add a blank tab in the future, just add a new element to TAB_NAMES (and extra now)
+
     TAB_NAMES = ["Rename Files", "Move Files"]
 
     # All tabs will contain frames of the same size
