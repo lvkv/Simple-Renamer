@@ -186,7 +186,6 @@ class SimpleRenamer:
     def update_replace_this(self, event):
         self.check_rename_entries(event)
         self.replace_this.set(self.entry_replace_this.get())
-        print(self.replace_this.get())
 
     def update_with_this(self, event):
         self.check_rename_entries(event)
@@ -225,6 +224,5 @@ class SimpleRenamer:
 
 
 root = Tk()
-yolo = True
 sr = SimpleRenamer(root)
 root.mainloop()
