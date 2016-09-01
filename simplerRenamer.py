@@ -34,7 +34,6 @@ class SimpleRenamer:
         # Initializing tabs and adding frames
         tabs = Notebook(master)
         rename_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
-
         tabs.add(rename_tab, text=self.TAB_NAMES[0])
         move_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
         tabs.add(move_tab, text=self.TAB_NAMES[1])
@@ -65,7 +64,6 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text="Choose Directory")
-
         self.rename_frame = LabelFrame(rename_tab, text="Find and Replace")
         self.label_txt_warn = Label(self.rename_frame,
                                     text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
@@ -75,7 +73,6 @@ class SimpleRenamer:
         label_2 = Label(self.rename_frame, text="  With this:  ")
         self.entry_replace_this = Entry(self.rename_frame, width=50, validate="key", validatecommand=vcmd)
         self.entry_with_this = Entry(self.rename_frame, width=50, validate="key", validatecommand=vcmd)
-
         self.rename_options_frame = LabelFrame(rename_tab, text="Options")
         self.checkbox_files = Checkbutton(self.rename_options_frame,
                                           text="Rename files",
@@ -99,6 +96,9 @@ class SimpleRenamer:
                                             variable=self.rename_subdirs)
         self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
+        # "Move Files" Tab - Creating GUI elements
+        self.button_dir_move = Button(move_tab, text="Choose Directory")
+
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
         self.button_run_rename.bind('<Button-1>', self.run_rename)
@@ -108,6 +108,9 @@ class SimpleRenamer:
         self.checkbox_subfiles.bind('<ButtonRelease-1>', self.set_rename_subfiles)
         self.checkbox_dirs.bind('<ButtonRelease-1>', self.set_rename_dirs)
         self.checkbox_subdirs.bind('<ButtonRelease-1>', self.set_rename_subdirs)
+
+        # "Move Files" Tab - Binding functions
+        self.button_dir_move.bind('<Button-1>', self.choose_dir_move)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
@@ -144,6 +147,13 @@ class SimpleRenamer:
                 self.button_run_rename.config(state=DISABLED)
                 return
         self.button_run_rename.config(state='normal')
+
+    def check_for_move_complete(self):
+        for item in self.completed_move_items:
+            if not item:
+                # disable that second run button
+                return
+        # enable that second run button
 
     def set_rename_files(self, event):
         self.rename_files.set(not self.rename_files.get())
@@ -191,6 +201,15 @@ class SimpleRenamer:
         else:
             self.completed_items[0] = False
         self.check_for_completion()
+
+    def choose_dir_move(self, event):
+        temp_dir = filedialog.askdirectory()
+        if temp_dir != "":
+            self.dir_path_move.set(temp_dir)
+            self.completed_move_items[0] = True
+        else:
+            self.completed_move_items[0] = False
+        self.check_for_move_complete()
 
     def run_rename(self, event):
         # INPUT: <Button-1> left mouse click event
