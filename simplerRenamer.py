@@ -45,6 +45,8 @@ class SimpleScript:
         self.dir_path = StringVar()
         self.replace_this = StringVar()
         self.with_this = StringVar()
+        self.replace_this.set("")
+        self.with_this.set("")
         self.rename_files = BooleanVar()
         self.rename_files.set(False)
         self.rename_subfiles = BooleanVar()
@@ -59,7 +61,7 @@ class SimpleScript:
         self.dir_path_move = StringVar()
         self.dir_path_move_to = StringVar()
         self.pre_suf_cont = IntVar()
-        self.start_end_contain = StringVar
+        self.start_end_contain = StringVar()
         self.move_files_here = StringVar()
 
         # "Rename Files" Tab - Creating GUI elements
@@ -127,7 +129,7 @@ class SimpleScript:
         # "Move Files" Tab - Binding functions
         self.button_dir_move.bind('<Button-1>', self.choose_dir_move)
         self.button_dir_move_to.bind('<Button-1>', self.choose_dir_move_destination)
-        self.entry_pre_suf_cont.bind('<ButtonRelease-1>', self.update_pre_suf_cont)
+        self.entry_pre_suf_cont.bind('<KeyRelease>', self.update_pre_suf_cont)
         self.button_run_move.bind('<Button-1>', self.run_move)
 
         # "Rename Files" Tab - Gridding GUI elements
@@ -173,11 +175,12 @@ class SimpleScript:
         self.button_run_rename.config(state='normal')
 
     def check_for_move_complete(self):  # Toggles "Move Files" run button state after checking for a complete form
+        print(self.completed_move_items)
         for item in self.completed_move_items:
             if not item:
                 self.button_run_move.config(state=DISABLED)
                 return
-        self.button_run_rename.config(state='normal')
+        self.button_run_move.config(state='normal')
 
     def set_rename_files(self, event):
         self.rename_files.set(not self.rename_files.get())
@@ -322,7 +325,7 @@ class SimpleScript:
 
     def update_pre_suf_cont(self, event):
         self.check_move_entries(event)
-        self.start_end_contain(self.entry_pre_suf_cont.get())
+        self.start_end_contain.set(self.entry_pre_suf_cont.get())
 
     def check_rename_entries(self, event):
         if self.entry_replace_this.get() != '':
