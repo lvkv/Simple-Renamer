@@ -273,14 +273,11 @@ class SimpleScript:
                 self.popup_window(self.successful_rename)
         else:  # Doing subdirectories
             for path, dirs, files in os.walk(self.dir_path.get()):
-                if self.rename_files and path == self.dir_path.get():
+                if (self.rename_files and path == self.dir_path.get()) or (
+                            self.rename_subfiles and path != self.dir_path.get()) or (
+                            self.rename_dirs and path == self.dir_path.get()) or (
+                            self.rename_subdirs and path != self.dir_path.get()):
                     self.walk_rename(files, path)
-                if self.rename_subfiles and path != self.dir_path.get():
-                    self.walk_rename(files, path)
-                if self.rename_dirs and path == self.dir_path.get():
-                    self.walk_rename(dirs, path)
-                if self.rename_subdirs and path != self.dir_path.get():
-                    self.walk_rename(dirs, path)
 
     def run_move(self, event):
         do_stuff = "yes"
