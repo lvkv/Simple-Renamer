@@ -55,13 +55,11 @@ class SimpleScript:
         self.rename_subdirs.set(False)
 
         # "Move Files" Tab - Variables
-        self.completed_move_items = [False, False, True]  # choose source, destination, radio buttons
+        self.completed_move_items = [False, False, True, False]  # choose source, destination, radio buttons, entry
         self.dir_path_move = StringVar()
         self.dir_path_move_to = StringVar()
         self.pre_suf_cont = IntVar()
-        self.starts_with = StringVar()
-        self.ends_with = StringVar()
-        self.contains = StringVar()
+        self.start_end_contain = StringVar
         self.move_files_here = StringVar()
 
         # "Rename Files" Tab - Creating GUI elements
@@ -101,7 +99,7 @@ class SimpleScript:
         # "Move Files" Tab - Creating GUI elements
         self.choose_move_dir_frame = LabelFrame(move_tab, text="From this directory...")
         self.button_dir_move = Button(self.choose_move_dir_frame, text='Choose Source Directory')
-        self.button_dir_move_to = Button(move_tab, text='Choose Destination Directory')
+        self.button_dir_move_to = Button(self.choose_move_dir_frame, text='Choose Destination Directory')
         self.prefix_suffix_frame = LabelFrame(move_tab, text="Move files with names that...")
         self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Start with ", variable=self.pre_suf_cont,
                                              value=0)
@@ -129,6 +127,7 @@ class SimpleScript:
         # "Move Files" Tab - Binding functions
         self.button_dir_move.bind('<Button-1>', self.choose_dir_move)
         self.button_dir_move_to.bind('<Button-1>', self.choose_dir_move_destination)
+        self.entry_pre_suf_cont.bind('<ButtonRelease-1>', self.update_pre_suf_cont)
         self.button_run_move.bind('<Button-1>', self.run_move)
 
         # "Rename Files" Tab - Gridding GUI elements
@@ -149,8 +148,9 @@ class SimpleScript:
         self.button_run_rename.grid(column=1, row=4, sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
-        self.choose_move_dir_frame.grid(row=0)
+        self.choose_move_dir_frame.grid(row=0, pady=(5, 5))
         self.button_dir_move.grid(column=0, row=0, pady=(10, 2))
+        self.button_dir_move_to.grid(column=0, row=2, padx=(5, 5), pady=(10, 5))
         self.prefix_suffix_frame.grid(column=0, row=1, padx=(5, 5))
         self.radio_starts_with.grid(row=0, column=0)
         self.radio_ends_with.grid(row=0, column=1)
@@ -158,8 +158,7 @@ class SimpleScript:
         self.label_txt_warn_move.grid(row=1, columnspan=3)
         self.label_txt_warn_move.grid_remove()
         self.label_move_blank.grid(row=1, columnspan=3)
-        self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 20))
-        self.button_dir_move_to.grid(column=0, row=2, pady=(10, 2))
+        self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 10))
         self.button_run_move.grid(row=3, pady=(10, 5))
 
         # Text on bottom of window
@@ -277,9 +276,6 @@ class SimpleScript:
                             self.rename_subdirs and path != self.dir_path.get()):
                     self.walk_rename(files, path)
 
-    def run_move(self, event):
-        do_stuff = "yes"
-
     def walk_rename(self, iterator, path):
         error_messages = []
         for item in iterator:
@@ -293,6 +289,9 @@ class SimpleScript:
             self.error_handle(error_messages)
         else:
             self.popup_window(self.successful_rename)
+
+    def run_move(self, event):
+        do_stuff = "yes"
 
     def error_handle(self, message_bank):
         error_message = "The following " + str(len(message_bank)) + 'error(s) have occurred:\n'
@@ -321,17 +320,23 @@ class SimpleScript:
         self.check_rename_entries(event)
         self.with_this.set(self.entry_with_this.get())
 
-    def check_rename_entries(self, event):
-        # INPUT: <Key-Released> event
-        # OUTPUT:
-        #
-        #
+    def update_pre_suf_cont(self, event):
+        self.check_move_entries(event)
+        self.start_end_contain(self.entry_pre_suf_cont.get())
 
+    def check_rename_entries(self, event):
         if self.entry_replace_this.get() != '':
             self.completed_items[1] = True
         else:
             self.completed_items[1] = False
         self.check_for_completion()
+
+    def check_move_entries(self, event):
+        if self.entry_pre_suf_cont.get() != '':
+            self.completed_move_items[3] = True
+        else:
+            self.completed_move_items[3] = False
+        self.check_for_move_complete()
 
     def flip_warnings(self, on_top):
         if on_top:
@@ -353,11 +358,6 @@ class SimpleScript:
         message_label.grid(padx=(10, 10), pady=(10, 10))
 
     def on_validate(self, s):
-        # INPUT: String input to entry
-        # OUTPUT: Returns true and sets self.previous_bad_validation = False if
-        #
-        # Also swaps warning label and blank
-
         for character in self.bad_chars:
             for substring in s:
                 if substring == character:
