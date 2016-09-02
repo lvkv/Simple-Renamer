@@ -2,17 +2,16 @@
 # Lukas Velikov
 #
 # Simple Script is a GUI app designed to make quick and simple mass file renames and relocations possible to clients
-# without scripting experience. Built using Python's Tkinter package. Included imports for Python 2.x, but not tested.
+# without scripting experience. Built using Python's Tkinter package.
 
 from tkinter import *  # Python 3.x
 from tkinter import filedialog
 from tkinter.ttk import *
-import sys #for shutil file moves
+import sys  # for shutil file moves
 import os
 
 
 class SimpleRenamer:
-
     TAB_NAMES = ["Rename Files", "Move Files"]
 
     # All tabs will contain frames of the same size
@@ -69,8 +68,8 @@ class SimpleRenamer:
         self.label_blank = Label(self.rename_frame, text=" ")
         label_1 = Label(self.rename_frame, text="  Replace this:  ")
         label_2 = Label(self.rename_frame, text="  With this:  ")
-        self.entry_replace_this = Entry(self.rename_frame, width=50, validate="key", validatecommand=vcmd)
-        self.entry_with_this = Entry(self.rename_frame, width=50, validate="key", validatecommand=vcmd)
+        self.entry_replace_this = Entry(self.rename_frame, width=50, validate='key', validatecommand=vcmd)
+        self.entry_with_this = Entry(self.rename_frame, width=50, validate='key', validatecommand=vcmd)
         self.rename_options_frame = LabelFrame(rename_tab, text="Options")
         self.checkbox_files = Checkbutton(self.rename_options_frame,
                                           text="Rename files",
@@ -97,10 +96,17 @@ class SimpleRenamer:
         # "Move Files" Tab - Creating GUI elements
         self.button_dir_move = Button(move_tab, text="Choose Directory")
         self.prefix_suffix_frame = LabelFrame(move_tab, text="Prefix and Suffix Support")
-        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Starts with ", variable=self.pre_suf_cont, value=0)
-        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text="Ends with ", variable=self.pre_suf_cont, value=1)
-        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text="Contains ", variable=self.pre_suf_cont, value=2)
-        self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=50)
+        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Starts with ", variable=self.pre_suf_cont,
+                                             value=0)
+        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text="Ends with ", variable=self.pre_suf_cont,
+                                           value=1)
+        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text="Contains ", variable=self.pre_suf_cont,
+                                          value=2)
+        self.label_move_blank = Label(self.prefix_suffix_frame, text="")
+        self.label_txt_warn_move = Label(self.prefix_suffix_frame,
+                                         text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
+        self.label_txt_warn_move.config(foreground='red')
+        self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=50, validate='key', validatecommand=vcmd)
 
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
@@ -133,12 +139,15 @@ class SimpleRenamer:
         self.button_run_rename.grid(column=1, row=4, sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
-        self.button_dir_move.grid(columnspan=2, pady=(10, 2))
-        self.prefix_suffix_frame.grid(column=1, row=1)
+        self.button_dir_move.grid(columnspan=3, pady=(10, 2))
+        self.prefix_suffix_frame.grid(column=1, row=1, padx=(5, 0))
         self.radio_starts_with.grid(row=0, column=0)
         self.radio_ends_with.grid(row=0, column=1)
         self.radio_contains.grid(row=0, column=2)
-        self.entry_pre_suf_cont.grid(row=1, columnspan=3)
+        self.label_txt_warn_move.grid(row=1, columnspan=3)
+        self.label_txt_warn_move.grid_remove()
+        self.label_move_blank.grid(row=1, columnspan=3)
+        self.entry_pre_suf_cont.grid(row=2, columnspan=3)
 
         # Text on bottom of window
         self.label = Label(master, text="")
@@ -161,7 +170,7 @@ class SimpleRenamer:
             if not item:
                 # disable that second run button
                 return
-        # enable that second run button
+                # enable that second run button
 
     def set_rename_files(self, event):
         self.rename_files.set(not self.rename_files.get())
@@ -231,7 +240,8 @@ class SimpleRenamer:
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
             for f in os.scandir(self.dir_path.get()):
                 file = self.dir_path.get() + "\\" + f.name
-                if (self.rename_dirs.get() and os.path.isdir(file)) or (self.rename_files.get() and os.path.isfile(file)):
+                if (self.rename_dirs.get() and os.path.isdir(file)) or (
+                    self.rename_files.get() and os.path.isfile(file)):
                     mod = self.dir_path.get() + "\\" + f.name.replace(self.replace_this.get(), self.with_this.get())
                     os.rename(file, mod)
             self.popup_window("File/directory rename successful.")
@@ -245,6 +255,9 @@ class SimpleRenamer:
                     self.walk_rename(dirs, path)
                 if self.rename_subdirs and path != self.dir_path.get():
                     self.walk_rename(dirs, path)
+
+    def run_move(self, event):
+        do_stuff = "yes"
 
     def walk_rename(self, iterator, path):
         for item in iterator:
@@ -287,11 +300,15 @@ class SimpleRenamer:
 
     def flip_warnings(self, on_top):
         if on_top:
+            self.label_move_blank.grid_remove()
             self.label_blank.grid_remove()
+            self.label_txt_warn_move.grid()
             self.label_txt_warn.grid()
             self.previous_bad_validation = True
         else:
+            self.label_txt_warn_move.grid_remove()
             self.label_txt_warn.grid_remove()
+            self.label_move_blank.grid()
             self.label_blank.grid()
             self.previous_bad_validation = False
 
