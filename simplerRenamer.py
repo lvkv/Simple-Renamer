@@ -4,13 +4,10 @@
 # Simple Script is a GUI app designed to make quick and simple mass file renames and relocations possible to clients
 # without scripting experience. Built using Python's Tkinter package. Included imports for Python 2.x, but not tested.
 
-try:
-    from tkinter import *  # Python 3.x
-except ImportError:
-    from Tkinter import *  # Python 2.x
+from tkinter import *  # Python 3.x
 from tkinter import filedialog
 from tkinter.ttk import *
-# import sys #for shutil file moves
+import sys #for shutil file moves
 import os
 
 
@@ -23,7 +20,7 @@ class SimpleRenamer:
     FRAME_HEIGHT = 250
 
     def __init__(self, master):
-        master.title("Simple Rename")
+        master.title("Simple Script")
         master.resizable(0, 0)
 
         # Entry validation
@@ -57,6 +54,7 @@ class SimpleRenamer:
         # "Move Files" Tab - Variables
         self.completed_move_items = []
         self.dir_path_move = StringVar()
+        self.pre_suf_cont = IntVar()
         self.starts_with = StringVar()
         self.ends_with = StringVar()
         self.contains = StringVar()
@@ -98,6 +96,11 @@ class SimpleRenamer:
 
         # "Move Files" Tab - Creating GUI elements
         self.button_dir_move = Button(move_tab, text="Choose Directory")
+        self.prefix_suffix_frame = LabelFrame(move_tab, text="Prefix and Suffix Support")
+        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Starts with ", variable=self.pre_suf_cont, value=0)
+        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text="Ends with ", variable=self.pre_suf_cont, value=1)
+        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text="Contains ", variable=self.pre_suf_cont, value=2)
+        self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=50)
 
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
@@ -114,7 +117,6 @@ class SimpleRenamer:
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
-
         self.rename_frame.grid(columnspan=2, padx=(5, 0))
         self.label_txt_warn.grid(columnspan=2, row=1, pady=(0, 5), sticky=S)
         self.label_txt_warn.grid_remove()  # label_txtWarn is only visible when an illegal character is entered
@@ -123,14 +125,20 @@ class SimpleRenamer:
         label_2.grid(row=3, sticky=E, pady=(0, 20))
         self.entry_replace_this.grid(row=2, column=1, pady=(0, 10))
         self.entry_with_this.grid(row=3, column=1, pady=(0, 20))
-
         self.rename_options_frame.grid(row=4, column=0, padx=(5, 0), pady=(0, 5), sticky=W)
         self.checkbox_files.grid(row=4, column=0, sticky=W)
         self.checkbox_subfiles.grid(row=5, column=0, sticky=W)
         self.checkbox_dirs.grid(row=6, column=0, sticky=W)
         self.checkbox_subdirs.grid(row=7, column=0, sticky=W)
-
         self.button_run_rename.grid(column=1, row=4, sticky=W)
+
+        # "Move Files" Tab - Gridding GUI elements
+        self.button_dir_move.grid(columnspan=2, pady=(10, 2))
+        self.prefix_suffix_frame.grid(column=1, row=1)
+        self.radio_starts_with.grid(row=0, column=0)
+        self.radio_ends_with.grid(row=0, column=1)
+        self.radio_contains.grid(row=0, column=2)
+        self.entry_pre_suf_cont.grid(row=1, columnspan=3)
 
         # Text on bottom of window
         self.label = Label(master, text="")
