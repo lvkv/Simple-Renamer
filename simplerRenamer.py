@@ -114,6 +114,7 @@ class SimpleScript:
                                          text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
         self.label_txt_warn_move.config(foreground='red')
         self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=62, validate='key', validatecommand=vcmd)
+        self.button_run_move = Button(move_tab, text='Run', state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
@@ -128,6 +129,7 @@ class SimpleScript:
         # "Move Files" Tab - Binding functions
         self.button_dir_move.bind('<Button-1>', self.choose_dir_move)
         self.button_dir_move_to.bind('<Button-1>', self.choose_dir_move_destination)
+        self.button_run_move.bind('<Button-1>', self.run_move)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
@@ -158,29 +160,25 @@ class SimpleScript:
         self.label_move_blank.grid(row=1, columnspan=3)
         self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 20))
         self.button_dir_move_to.grid(column=0, row=2, pady=(10, 2))
+        self.button_run_move.grid(row=3, pady=(10, 5))
 
         # Text on bottom of window
         self.label = Label(master, text="")
         self.label.grid()
 
-    def check_for_completion(self):
-        # INPUT: Nothing
-        # OUTPUT: If every element in self.completed_items is true, allows user to click "Run"
-        #
-        # Nothing much to say about this method
-
+    def check_for_completion(self):  # Toggles "Rename Files" run button state after checking for a complete form
         for item in self.completed_items:
             if not item:
                 self.button_run_rename.config(state=DISABLED)
                 return
         self.button_run_rename.config(state='normal')
 
-    def check_for_move_complete(self):
+    def check_for_move_complete(self):  # Toggles "Move Files" run button state after checking for a complete form
         for item in self.completed_move_items:
             if not item:
-                # disable that second run button
+                self.button_run_move.config(state=DISABLED)
                 return
-                # enable that second run button
+        self.button_run_rename.config(state='normal')
 
     def set_rename_files(self, event):
         self.rename_files.set(not self.rename_files.get())
