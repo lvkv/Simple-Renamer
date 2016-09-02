@@ -95,8 +95,9 @@ class SimpleScript:
         self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
-        self.button_dir_move = Button(move_tab, text='Source Directory')
-        self.button_dir_move_to = Button(move_tab, text='Destination Directory')
+        self.choose_move_dir_frame = LabelFrame(move_tab, text="From this directory...")
+        self.button_dir_move = Button(self.choose_move_dir_frame, text='Choose Source Directory')
+        self.button_dir_move_to = Button(move_tab, text='Choose Destination Directory')
         self.prefix_suffix_frame = LabelFrame(move_tab, text="Move files with names that...")
         self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Start with ", variable=self.pre_suf_cont,
                                              value=0)
@@ -108,7 +109,7 @@ class SimpleScript:
         self.label_txt_warn_move = Label(self.prefix_suffix_frame,
                                          text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
         self.label_txt_warn_move.config(foreground='red')
-        self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=50, validate='key', validatecommand=vcmd)
+        self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=62, validate='key', validatecommand=vcmd)
 
         # "Rename Files" Tab - Binding functions
         button_dir.bind('<Button-1>', self.choose_dir)
@@ -126,7 +127,7 @@ class SimpleScript:
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
-        self.rename_frame.grid(columnspan=2, padx=(5, 0))
+        self.rename_frame.grid(columnspan=2, padx=(5, 5))
         self.label_txt_warn.grid(columnspan=2, row=1, pady=(0, 5), sticky=S)
         self.label_txt_warn.grid_remove()  # label_txtWarn is only visible when an illegal character is entered
         self.label_blank.grid(columnspan=2, row=1, pady=(0, 5), sticky=S)
@@ -142,9 +143,9 @@ class SimpleScript:
         self.button_run_rename.grid(column=1, row=4, sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
+        self.choose_move_dir_frame.grid(row=0)
         self.button_dir_move.grid(column=0, row=0, pady=(10, 2))
-        self.button_dir_move_to.grid(column=1, row=0, pady=(10, 2))
-        self.prefix_suffix_frame.grid(column=1, row=1, padx=(5, 0))
+        self.prefix_suffix_frame.grid(column=0, row=1, padx=(5, 5))
         self.radio_starts_with.grid(row=0, column=0)
         self.radio_ends_with.grid(row=0, column=1)
         self.radio_contains.grid(row=0, column=2)
@@ -152,6 +153,7 @@ class SimpleScript:
         self.label_txt_warn_move.grid_remove()
         self.label_move_blank.grid(row=1, columnspan=3)
         self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 20))
+        self.button_dir_move_to.grid(column=0, row=2, pady=(10, 2))
 
         # Text on bottom of window
         self.label = Label(master, text="")
@@ -251,13 +253,25 @@ class SimpleScript:
         if str(self.button_run_rename['state']) == 'disabled':
             return
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
+            error_messages = []
+            error_count = 0
             for f in os.scandir(self.dir_path.get()):
                 file = self.dir_path.get() + "\\" + f.name
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (
                     self.rename_files.get() and os.path.isfile(file)):
                     mod = self.dir_path.get() + "\\" + f.name.replace(self.replace_this.get(), self.with_this.get())
-                    os.rename(file, mod)
-            self.popup_window("File/directory rename successful.")
+                    if os.path.exists(mod):
+                        error_messages.append("Renamed file already exists: "+mod+'\n')
+                        error_count += 1
+                    else:
+                        os.rename(file, mod)
+            if error_count != 0:
+                errmessage = "The following "+str(error_count)+" error(s) have occurred:\n"
+                for error in error_messages:
+                    errmessage += error
+                self.popup_window(errmessage)
+            else:
+                self.popup_window("File/directory rename successful.")
         else:  # Doing subdirectories
             for path, dirs, files in os.walk(self.dir_path.get()):
                 if self.rename_files and path == self.dir_path.get():
