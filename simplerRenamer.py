@@ -99,7 +99,7 @@ class SimpleScript:
         self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
-        self.choose_move_dir_frame = LabelFrame(move_tab, text="From this directory...")
+        self.choose_move_dir_frame = LabelFrame(move_tab, text="Choose Directories")
         self.button_dir_move = Button(self.choose_move_dir_frame, text='Choose Source Directory')
         self.button_dir_move_to = Button(self.choose_move_dir_frame, text='Choose Destination Directory')
         self.prefix_suffix_frame = LabelFrame(move_tab, text="Move files with names that...")
@@ -114,6 +114,10 @@ class SimpleScript:
                                          text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
         self.label_txt_warn_move.config(foreground='red')
         self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=62, validate='key', validatecommand=vcmd)
+        self.source_text = 'Source: '
+        self.dest_text = 'Destination: '
+        self.label_source = Label(move_tab, text=self.source_text+'None Selected')
+        self.label_dest = Label(move_tab, text=self.dest_text+'None Selected')
         self.button_run_move = Button(move_tab, text='Run', state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
@@ -150,9 +154,9 @@ class SimpleScript:
         self.button_run_rename.grid(column=1, row=4, sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
-        self.choose_move_dir_frame.grid(row=0, pady=(5, 5))
+        self.choose_move_dir_frame.grid(row=0, pady=(10, 5))
         self.button_dir_move.grid(column=0, row=0, pady=(10, 2))
-        self.button_dir_move_to.grid(column=0, row=2, padx=(5, 5), pady=(10, 5))
+        self.button_dir_move_to.grid(column=1, row=0, padx=(5, 5), pady=(10, 5))
         self.prefix_suffix_frame.grid(column=0, row=1, padx=(5, 5))
         self.radio_starts_with.grid(row=0, column=0)
         self.radio_ends_with.grid(row=0, column=1)
@@ -161,7 +165,9 @@ class SimpleScript:
         self.label_txt_warn_move.grid_remove()
         self.label_move_blank.grid(row=1, columnspan=3)
         self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 10))
-        self.button_run_move.grid(row=3, pady=(10, 5))
+        self.label_source.grid(row=3)
+        self.label_dest.grid(row=4)
+        self.button_run_move.grid(row=5, pady=(10, 5))
 
         # Text on bottom of window
         self.label = Label(master, text="")
@@ -175,7 +181,6 @@ class SimpleScript:
         self.button_run_rename.config(state='normal')
 
     def check_for_move_complete(self):  # Toggles "Move Files" run button state after checking for a complete form
-        print(self.completed_move_items)
         for item in self.completed_move_items:
             if not item:
                 self.button_run_move.config(state=DISABLED)
@@ -233,15 +238,23 @@ class SimpleScript:
         temp_dir = filedialog.askdirectory()
         if temp_dir != "":
             self.dir_path_move.set(temp_dir)
+            self.update_move_source(temp_dir)
             self.completed_move_items[0] = True
         else:
             self.completed_move_items[0] = False
         self.check_for_move_complete()
 
+    def update_move_source(self, text):
+        self.label_source.config(text=self.source_text+text)
+
+    def update_move_dest(self, text):
+        self.label_dest.config(text=self.dest_text+text)
+
     def choose_dir_move_destination(self, event):
         temp_dir = filedialog.askdirectory()
         if temp_dir != "":
             self.dir_path_move_to.set(temp_dir)
+            self.update_move_dest(temp_dir)
             self.completed_move_items[1] = True
         else:
             self.completed_move_items[1] = False
