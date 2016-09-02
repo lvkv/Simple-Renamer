@@ -11,7 +11,7 @@ import sys  # for shutil file moves
 import os
 
 
-class SimpleRenamer:
+class SimpleScript:
     TAB_NAMES = ["Rename Files", "Move Files"]
 
     # All tabs will contain frames of the same size
@@ -346,5 +346,5 @@ class SimpleRenamer:
 
 
 root = Tk()
-sr = SimpleRenamer(root)
+sr = SimpleScript(root)
 root.mainloop()
