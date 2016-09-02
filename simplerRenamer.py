@@ -258,21 +258,19 @@ class SimpleScript:
             return
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
             error_messages = []
-            error_count = 0
             for f in os.scandir(self.dir_path.get()):
                 file = self.dir_path.get() + "\\" + f.name
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (
-                    self.rename_files.get() and os.path.isfile(file)):
+                            self.rename_files.get() and os.path.isfile(file)):
                     mod = self.dir_path.get() + "\\" + f.name.replace(self.replace_this.get(), self.with_this.get())
                     if os.path.exists(mod):
-                        error_messages.append(self.error_renamed_exists+mod+'\n')
-                        error_count += 1
+                        error_messages.append(self.error_renamed_exists + mod + '\n')
                     else:
                         os.rename(file, mod)
-            if error_count != 0:
+            if len(error_messages) != 0:
                 self.error_handle(error_messages)
             else:
-                self.popup_window(self.successful_process)
+                self.popup_window(self.successful_rename)
         else:  # Doing subdirectories
             for path, dirs, files in os.walk(self.dir_path.get()):
                 if self.rename_files and path == self.dir_path.get():
@@ -289,19 +287,17 @@ class SimpleScript:
 
     def walk_rename(self, iterator, path):
         error_messages = []
-        error_count = 0
         for item in iterator:
             full_path = path + "\\" + item
             modified_path = path + "\\" + item.replace(self.replace_this.get(), self.with_this.get())
             if os.path.exists(modified_path):
-                error_messages.append(self.error_renamed_exists+modified_path+'\n')
-                error_count += 1
+                error_messages.append(self.error_renamed_exists + modified_path + '\n')
             else:
                 os.rename(full_path, modified_path)
-        if error_count != 0:
+        if len(error_messages) != 0:
             self.error_handle(error_messages)
         else:
-            self.popup_window(self.successful_process)
+            self.popup_window(self.successful_rename)
 
     def error_handle(self, message_bank):
         error_message = "The following " + str(len(message_bank)) + 'error(s) have occurred:\n'
