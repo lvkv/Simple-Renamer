@@ -18,6 +18,10 @@ class SimpleScript:
     FRAME_WIDTH = 400
     FRAME_HEIGHT = 250
 
+    successful_rename = "File/directory rename successful."
+    successful_move = "File/directory relocation successful."
+    error_renamed_exists = "Renamed file already exists: "
+
     def __init__(self, master):
         master.title("Simple Script")
         master.resizable(0, 0)
@@ -261,17 +265,14 @@ class SimpleScript:
                     self.rename_files.get() and os.path.isfile(file)):
                     mod = self.dir_path.get() + "\\" + f.name.replace(self.replace_this.get(), self.with_this.get())
                     if os.path.exists(mod):
-                        error_messages.append("Renamed file already exists: "+mod+'\n')
+                        error_messages.append(self.error_renamed_exists+mod+'\n')
                         error_count += 1
                     else:
                         os.rename(file, mod)
             if error_count != 0:
-                errmessage = "The following "+str(error_count)+" error(s) have occurred:\n"
-                for error in error_messages:
-                    errmessage += error
-                self.popup_window(errmessage)
+                self.error_handle(error_messages)
             else:
-                self.popup_window("File/directory rename successful.")
+                self.popup_window(self.successful_process)
         else:  # Doing subdirectories
             for path, dirs, files in os.walk(self.dir_path.get()):
                 if self.rename_files and path == self.dir_path.get():
@@ -287,10 +288,26 @@ class SimpleScript:
         do_stuff = "yes"
 
     def walk_rename(self, iterator, path):
+        error_messages = []
+        error_count = 0
         for item in iterator:
             full_path = path + "\\" + item
             modified_path = path + "\\" + item.replace(self.replace_this.get(), self.with_this.get())
-            os.rename(full_path, modified_path)
+            if os.path.exists(modified_path):
+                error_messages.append(self.error_renamed_exists+modified_path+'\n')
+                error_count += 1
+            else:
+                os.rename(full_path, modified_path)
+        if error_count != 0:
+            self.error_handle(error_messages)
+        else:
+            self.popup_window(self.successful_process)
+
+    def error_handle(self, message_bank):
+        error_message = "The following " + str(len(message_bank)) + 'error(s) have occurred:\n'
+        for error in message_bank:
+            error_message += error
+        self.popup_window(error_message)
 
     def cycle_frame_text(self, event):
         # INPUT: Window and <<NotebookTabChanged>> event
