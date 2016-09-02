@@ -51,8 +51,9 @@ class SimpleRenamer:
         self.rename_subdirs.set(False)
 
         # "Move Files" Tab - Variables
-        self.completed_move_items = []
+        self.completed_move_items = [False, False, True] # choose source, destination, radio buttons
         self.dir_path_move = StringVar()
+        self.dir_path_move_to = StringVar()
         self.pre_suf_cont = IntVar()
         self.starts_with = StringVar()
         self.ends_with = StringVar()
@@ -94,7 +95,8 @@ class SimpleRenamer:
         self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
-        self.button_dir_move = Button(move_tab, text="Choose Directory")
+        self.button_dir_move = Button(move_tab, text='Source Directory')
+        self.button_dir_move_to = Button(move_tab, text='Destination Directory')
         self.prefix_suffix_frame = LabelFrame(move_tab, text="Prefix and Suffix Support")
         self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Starts with ", variable=self.pre_suf_cont,
                                              value=0)
@@ -139,7 +141,8 @@ class SimpleRenamer:
         self.button_run_rename.grid(column=1, row=4, sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
-        self.button_dir_move.grid(columnspan=3, pady=(10, 2))
+        self.button_dir_move.grid(column=0, row=0, pady=(10, 2))
+        self.button_dir_move_to.grid(column=1, row=0, pady=(10, 2))
         self.prefix_suffix_frame.grid(column=1, row=1, padx=(5, 0))
         self.radio_starts_with.grid(row=0, column=0)
         self.radio_ends_with.grid(row=0, column=1)
@@ -226,6 +229,15 @@ class SimpleRenamer:
             self.completed_move_items[0] = True
         else:
             self.completed_move_items[0] = False
+        self.check_for_move_complete()
+
+    def choose_dir_move_destination(self, event):
+        temp_dir = filedialog.askdirectory()
+        if temp_dir != "":
+            self.dir_path_move_to.set(temp_dir)
+            self.completed_move_items[1] = True
+        else:
+            self.completed_move_items[1] = False
         self.check_for_move_complete()
 
     def run_rename(self, event):
