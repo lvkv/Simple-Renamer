@@ -51,7 +51,7 @@ class SimpleScript:
         self.rename_subdirs.set(False)
 
         # "Move Files" Tab - Variables
-        self.completed_move_items = [False, False, True] # choose source, destination, radio buttons
+        self.completed_move_items = [False, False, True]  # choose source, destination, radio buttons
         self.dir_path_move = StringVar()
         self.dir_path_move_to = StringVar()
         self.pre_suf_cont = IntVar()
@@ -97,12 +97,12 @@ class SimpleScript:
         # "Move Files" Tab - Creating GUI elements
         self.button_dir_move = Button(move_tab, text='Source Directory')
         self.button_dir_move_to = Button(move_tab, text='Destination Directory')
-        self.prefix_suffix_frame = LabelFrame(move_tab, text="Prefix and Suffix Support")
-        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Starts with ", variable=self.pre_suf_cont,
+        self.prefix_suffix_frame = LabelFrame(move_tab, text="Move files with names that...")
+        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Start with ", variable=self.pre_suf_cont,
                                              value=0)
-        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text="Ends with ", variable=self.pre_suf_cont,
+        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text="End with ", variable=self.pre_suf_cont,
                                            value=1)
-        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text="Contains ", variable=self.pre_suf_cont,
+        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text="Contain ", variable=self.pre_suf_cont,
                                           value=2)
         self.label_move_blank = Label(self.prefix_suffix_frame, text="")
         self.label_txt_warn_move = Label(self.prefix_suffix_frame,
@@ -122,6 +122,7 @@ class SimpleScript:
 
         # "Move Files" Tab - Binding functions
         self.button_dir_move.bind('<Button-1>', self.choose_dir_move)
+        self.button_dir_move_to.bind('<Button-1>', self.choose_dir_move_destination)
 
         # "Rename Files" Tab - Gridding GUI elements
         button_dir.grid(columnspan=2, pady=(10, 2))
@@ -150,7 +151,7 @@ class SimpleScript:
         self.label_txt_warn_move.grid(row=1, columnspan=3)
         self.label_txt_warn_move.grid_remove()
         self.label_move_blank.grid(row=1, columnspan=3)
-        self.entry_pre_suf_cont.grid(row=2, columnspan=3)
+        self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 20))
 
         # Text on bottom of window
         self.label = Label(master, text="")
