@@ -7,20 +7,20 @@
 from tkinter import *  # Python 3.x
 from tkinter import filedialog
 from tkinter.ttk import *
-import sys  # for shutil file moves
+import sched, time
+import sys
 import os
 
 
 class SimpleScript:
-    TAB_NAMES = ["Rename Files", "Move Files"]
 
-    # All tabs will contain frames of the same size
+    TAB_NAMES = ["Rename Files", "Move Files"]
     FRAME_WIDTH = 400
     FRAME_HEIGHT = 250
-
     successful_rename = "File/directory rename successful."
     successful_move = "File/directory relocation successful."
     error_renamed_exists = "Renamed file already exists: "
+    s = sched.scheduler(time.time, time.sleep)
 
     def __init__(self, master):
         master.title("Simple Script")
@@ -55,7 +55,10 @@ class SimpleScript:
         self.rename_dirs.set(False)
         self.rename_subdirs = BooleanVar()
         self.rename_subdirs.set(False)
+        self.ater_id = None
+        self.current_char = 0
         self.text_width = 20
+        self.scroll_delay = 250
 
         # "Move Files" Tab - Variables
         self.completed_move_items = [False, False, True, False]  # choose source, destination, radio buttons, entry
@@ -97,9 +100,11 @@ class SimpleScript:
                                             onvalue=True,
                                             offvalue=False,
                                             variable=self.rename_subdirs)
+
         self.source_rename_text = "Directory: "
+        self.source_rename_text_temp = self.source_rename_text + 'None Selected'
         self.frame_rename_run = LabelFrame(rename_tab, text="Info and Run")
-        self.label_rename_source = Label(self.frame_rename_run, text=self.source_rename_text+"None Selected")
+        self.label_rename_source = Label(self.frame_rename_run, text=self.source_rename_text_temp)
         self.button_run_rename = Button(self.frame_rename_run, text="Run", state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
@@ -122,6 +127,7 @@ class SimpleScript:
         self.dest_text = 'Destination: '
         self.label_source = Label(move_tab, text=self.source_text+'None Selected')
         self.label_dest = Label(move_tab, text=self.dest_text+'None Selected')
+        print(self.label_dest)
         self.button_run_move = Button(move_tab, text='Run', state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
@@ -157,7 +163,7 @@ class SimpleScript:
         self.checkbox_subdirs.grid(row=7, column=0, sticky=W)
         self.frame_rename_run.grid(column=1, row=3, sticky=W)
         self.label_rename_source.grid(column=1, row=3, padx=(5, 5), sticky=W)
-        self.button_run_rename.grid(column=1, row=4, padx=(5, 5), sticky=W)
+        self.button_run_rename.grid(column=1, row=4, padx=(5, 5), pady=(5, 5), sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
         self.choose_move_dir_frame.grid(row=0, pady=(10, 5))
@@ -382,6 +388,12 @@ class SimpleScript:
         top_level = Toplevel()
         message_label = Label(top_level, text=message)
         message_label.grid(padx=(10, 10), pady=(10, 10))
+
+    def cycle_marquee(self, sc):
+        print("Got here")
+        marq_text = self.dir_path.get()[self.current_char, self.current_char+self.text_width]
+        self.update_rename_source(marq_text)
+        self.s.enter(1, 1, self.cycle_marquee, (sc,))
 
     def on_validate(self, s):
         for character in self.bad_chars:
