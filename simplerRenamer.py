@@ -55,6 +55,7 @@ class SimpleScript:
         self.rename_dirs.set(False)
         self.rename_subdirs = BooleanVar()
         self.rename_subdirs.set(False)
+        self.text_width = 20
 
         # "Move Files" Tab - Variables
         self.completed_move_items = [False, False, True, False]  # choose source, destination, radio buttons, entry
@@ -96,7 +97,10 @@ class SimpleScript:
                                             onvalue=True,
                                             offvalue=False,
                                             variable=self.rename_subdirs)
-        self.button_run_rename = Button(rename_tab, text="Run", state=DISABLED)
+        self.source_rename_text = "Directory: "
+        self.frame_rename_run = LabelFrame(rename_tab, text="Info and Run")
+        self.label_rename_source = Label(self.frame_rename_run, text=self.source_rename_text+"None Selected")
+        self.button_run_rename = Button(self.frame_rename_run, text="Run", state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
         self.choose_move_dir_frame = LabelFrame(move_tab, text="Choose Directories")
@@ -146,12 +150,14 @@ class SimpleScript:
         label_2.grid(row=3, sticky=E, pady=(0, 20))
         self.entry_replace_this.grid(row=2, column=1, pady=(0, 10))
         self.entry_with_this.grid(row=3, column=1, pady=(0, 20))
-        self.rename_options_frame.grid(row=4, column=0, padx=(5, 0), pady=(0, 5), sticky=W)
+        self.rename_options_frame.grid(row=3, column=0, padx=(5, 0), pady=(0, 5), sticky=W)
         self.checkbox_files.grid(row=4, column=0, sticky=W)
         self.checkbox_subfiles.grid(row=5, column=0, sticky=W)
         self.checkbox_dirs.grid(row=6, column=0, sticky=W)
         self.checkbox_subdirs.grid(row=7, column=0, sticky=W)
-        self.button_run_rename.grid(column=1, row=4, sticky=W)
+        self.frame_rename_run.grid(column=1, row=3, sticky=W)
+        self.label_rename_source.grid(column=1, row=3, padx=(5, 5), sticky=W)
+        self.button_run_rename.grid(column=1, row=4, padx=(5, 5), sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
         self.choose_move_dir_frame.grid(row=0, pady=(10, 5))
@@ -229,6 +235,7 @@ class SimpleScript:
         temp_dir = filedialog.askdirectory()
         if temp_dir != "":
             self.dir_path.set(temp_dir)
+            self.update_rename_source(temp_dir)
             self.completed_items[0] = True
         else:
             self.completed_items[0] = False
@@ -249,6 +256,9 @@ class SimpleScript:
 
     def update_move_dest(self, text):
         self.label_dest.config(text=self.dest_text+text)
+
+    def update_rename_source(self, text):
+        self.label_rename_source.config(text=self.dest_text+text)
 
     def choose_dir_move_destination(self, event):
         temp_dir = filedialog.askdirectory()
