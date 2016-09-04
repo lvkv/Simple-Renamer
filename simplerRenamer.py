@@ -98,9 +98,9 @@ class SimpleScript:
                                             offvalue=False,
                                             variable=self.rename_subdirs)
 
-        self.source_rename_text = StringVar(value='Directory: ')
+        self.source_rename_text = StringVar(value='')
         self.frame_rename_run = LabelFrame(rename_tab, text="Info and Run")
-        self.label_dir = Entry(self.frame_rename_run, textvariable=self.source_rename_text, state='readonly')
+        self.label_dir = Entry(self.frame_rename_run, textvariable=self.source_rename_text, width=30, state='readonly')
         self.scroll_dir_name = Scrollbar(self.frame_rename_run, orient=HORIZONTAL, command=self.label_dir.xview)
         self.label_dir.config(xscrollcommand=self.scroll_dir_name.set)
         self.button_run_rename = Button(self.frame_rename_run, text="Run", state=DISABLED)
@@ -265,9 +265,11 @@ class SimpleScript:
 
     def update_rename_source(self, text):
         self.label_dir.grid()
-        self.scroll_dir_name.grid()
-        self.source_rename_text.set('Destination: ' + text)
-        #self.label_dir.config(text=self.dest_text + text)
+        if len(text) > 30:
+            self.scroll_dir_name.grid()
+        else:
+            self.scroll_dir_name.grid_remove()
+        self.source_rename_text.set('' + text)
 
     def choose_dir_move_destination(self, event):
         temp_dir = filedialog.askdirectory()
