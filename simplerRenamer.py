@@ -13,7 +13,6 @@ import os
 
 
 class SimpleScript:
-
     TAB_NAMES = ["Rename Files", "Move Files"]
     FRAME_WIDTH = 400
     FRAME_HEIGHT = 250
@@ -125,8 +124,8 @@ class SimpleScript:
         self.entry_pre_suf_cont = Entry(self.prefix_suffix_frame, width=62, validate='key', validatecommand=vcmd)
         self.source_text = 'Source: '
         self.dest_text = 'Destination: '
-        self.label_source = Label(move_tab, text=self.source_text+'None Selected')
-        self.label_dest = Label(move_tab, text=self.dest_text+'None Selected')
+        self.label_source = Label(move_tab, text=self.source_text + 'None Selected')
+        self.label_dest = Label(move_tab, text=self.dest_text + 'None Selected')
         print(self.label_dest)
         self.button_run_move = Button(move_tab, text='Run', state=DISABLED)
 
@@ -258,13 +257,13 @@ class SimpleScript:
         self.check_for_move_complete()
 
     def update_move_source(self, text):
-        self.label_source.config(text=self.source_text+text)
+        self.label_source.config(text=self.source_text + text)
 
     def update_move_dest(self, text):
-        self.label_dest.config(text=self.dest_text+text)
+        self.label_dest.config(text=self.dest_text + text)
 
     def update_rename_source(self, text):
-        self.label_rename_source.config(text=self.dest_text+text)
+        self.label_rename_source.config(text=self.dest_text + text)
 
     def choose_dir_move_destination(self, event):
         temp_dir = filedialog.askdirectory()
@@ -301,26 +300,38 @@ class SimpleScript:
             else:
                 self.popup_window(self.successful_rename)
         else:  # Doing subdirectories
+            error_messages = []
             for path, dirs, files in os.walk(self.dir_path.get()):
                 if (self.rename_files and path == self.dir_path.get()) or (
-                            self.rename_subfiles and path != self.dir_path.get()) or (
-                            self.rename_dirs and path == self.dir_path.get()) or (
+                            self.rename_subfiles and path != self.dir_path.get()):
+                    rename_report = self.walk_rename(files, path)
+                    if len(rename_report) > 0:
+                        for message in rename_report:
+                            error_messages.append(message)
+                elif (self.rename_dirs and path == self.dir_path.get()) or (
                             self.rename_subdirs and path != self.dir_path.get()):
-                    self.walk_rename(files, path)
+                    rename_report = self.walk_rename(dirs, path)
+                    if len(rename_report) > 0:
+                        for message in rename_report:
+                            error_messages.append(message)
+            if len(error_messages) > 0:
+                self.error_handle(error_messages)
+            else:
+                self.popup_window(self.successful_rename)
 
     def walk_rename(self, iterator, path):
         error_messages = []
         for item in iterator:
             full_path = path + "\\" + item
             modified_path = path + "\\" + item.replace(self.replace_this.get(), self.with_this.get())
-            if os.path.exists(modified_path):
+            if os.path.exists(modified_path) and full_path != modified_path:
                 error_messages.append(self.error_renamed_exists + modified_path + '\n')
             else:
                 os.rename(full_path, modified_path)
         if len(error_messages) != 0:
-            self.error_handle(error_messages)
+            return error_messages
         else:
-            self.popup_window(self.successful_rename)
+            return []
 
     def run_move(self, event):
         do_stuff = "yes"
@@ -391,7 +402,7 @@ class SimpleScript:
 
     def cycle_marquee(self, sc):
         print("Got here")
-        marq_text = self.dir_path.get()[self.current_char, self.current_char+self.text_width]
+        marq_text = self.dir_path.get()[self.current_char, self.current_char + self.text_width]
         self.update_rename_source(marq_text)
         self.s.enter(1, 1, self.cycle_marquee, (sc,))
 
