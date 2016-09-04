@@ -7,7 +7,6 @@
 from tkinter import *  # Python 3.x
 from tkinter import filedialog
 from tkinter.ttk import *
-import sched, time
 import sys
 import os
 
@@ -19,7 +18,6 @@ class SimpleScript:
     successful_rename = "File/directory rename successful."
     successful_move = "File/directory relocation successful."
     error_renamed_exists = "Renamed file already exists: "
-    s = sched.scheduler(time.time, time.sleep)
 
     def __init__(self, master):
         master.title("Simple Script")
@@ -54,10 +52,6 @@ class SimpleScript:
         self.rename_dirs.set(False)
         self.rename_subdirs = BooleanVar()
         self.rename_subdirs.set(False)
-        self.ater_id = None
-        self.current_char = 0
-        self.text_width = 20
-        self.scroll_delay = 250
 
         # "Move Files" Tab - Variables
         self.completed_move_items = [False, False, True, False]  # choose source, destination, radio buttons, entry
@@ -126,7 +120,6 @@ class SimpleScript:
         self.dest_text = 'Destination: '
         self.label_source = Label(move_tab, text=self.source_text + 'None Selected')
         self.label_dest = Label(move_tab, text=self.dest_text + 'None Selected')
-        print(self.label_dest)
         self.button_run_move = Button(move_tab, text='Run', state=DISABLED)
 
         # "Rename Files" Tab - Binding functions
@@ -399,12 +392,6 @@ class SimpleScript:
         top_level = Toplevel()
         message_label = Label(top_level, text=message)
         message_label.grid(padx=(10, 10), pady=(10, 10))
-
-    def cycle_marquee(self, sc):
-        print("Got here")
-        marq_text = self.dir_path.get()[self.current_char, self.current_char + self.text_width]
-        self.update_rename_source(marq_text)
-        self.s.enter(1, 1, self.cycle_marquee, (sc,))
 
     def on_validate(self, s):
         for character in self.bad_chars:
