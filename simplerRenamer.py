@@ -12,19 +12,21 @@ import os
 
 
 class SimpleScript:
-    TAB_NAMES = ["Rename Files", "Move Files"]
+    TAB_NAMES = ['Rename Files', 'Move Files']
     FRAME_WIDTH = 400
     FRAME_HEIGHT = 250
 
-    successful_rename = "File/directory rename successful."
-    successful_move = "File/directory relocation successful."
+    successful_rename = 'File/directory rename successful.'
+    successful_move = 'File/directory relocation successful.'
 
-    error_unexpected = "Unexpected error occurred: "
-    error_renamed_exists = "Renamed file already exists: "
-    error_dir_not_exist = "Directory not found: "
+    error_unexpected = 'Unexpected error occurred: '
+    error_renamed_exists = 'Renamed file already exists: '
+    error_none_renamed = 'No files/directories could be renamed'
+    error_none_moved = 'No files could be moved'
+    error_dir_not_exist = 'Directory not found: '
 
     def __init__(self, master):
-        master.title("Simple Script")
+        master.title('Simple Script')
         master.resizable(0, 0)
 
         # Entry validation
@@ -38,7 +40,7 @@ class SimpleScript:
         tabs.add(rename_tab, text=self.TAB_NAMES[0])
         move_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
         tabs.add(move_tab, text=self.TAB_NAMES[1])
-        tabs.bind_all("<<NotebookTabChanged>>", self.cycle_frame_text)
+        tabs.bind_all('<<NotebookTabChanged>>', self.cycle_frame_text)
         tabs.grid()
 
         # "Rename Files" Tab - Variables
@@ -46,8 +48,8 @@ class SimpleScript:
         self.dir_path = StringVar()
         self.replace_this = StringVar()
         self.with_this = StringVar()
-        self.replace_this.set("")
-        self.with_this.set("")
+        self.replace_this.set('')
+        self.with_this.set('')
         self.rename_files = BooleanVar()
         self.rename_files.set(False)
         self.rename_subfiles = BooleanVar()
@@ -66,57 +68,59 @@ class SimpleScript:
         self.move_files_here = StringVar()
 
         # "Rename Files" Tab - Creating GUI elements
-        button_dir = Button(rename_tab, text="Choose Directory")
-        self.rename_frame = LabelFrame(rename_tab, text="Find and Replace")
+        button_dir = Button(rename_tab, text='Choose Directory')
+        self.rename_frame = LabelFrame(rename_tab, text='Find and Replace')
         self.label_txt_warn = Label(self.rename_frame,
                                     text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
         self.label_txt_warn.config(foreground='red')
-        self.label_blank = Label(self.rename_frame, text=" ")
-        label_1 = Label(self.rename_frame, text="  Replace this:  ")
-        label_2 = Label(self.rename_frame, text="  With this:  ")
+        self.label_blank = Label(self.rename_frame, text=' ')
+        label_1 = Label(self.rename_frame, text='  Replace this:  ')
+        label_2 = Label(self.rename_frame, text='  With this:  ')
         self.entry_replace_this = Entry(self.rename_frame, width=50, validate='key', validatecommand=vcmd)
         self.entry_with_this = Entry(self.rename_frame, width=50, validate='key', validatecommand=vcmd)
-        self.rename_options_frame = LabelFrame(rename_tab, text="Options")
+        self.rename_options_frame = LabelFrame(rename_tab, text='Options')
         self.checkbox_files = Checkbutton(self.rename_options_frame,
-                                          text="Rename files",
+                                          text='Rename files',
                                           onvalue=True,
                                           offvalue=False,
                                           variable=self.rename_files)
         self.checkbox_subfiles = Checkbutton(self.rename_options_frame,
-                                             text="Rename subdirectory files",
+                                             text='Rename subdirectory files',
                                              onvalue=True,
                                              offvalue=False,
                                              variable=self.rename_subfiles)
         self.checkbox_dirs = Checkbutton(self.rename_options_frame,
-                                         text="Rename directories",
+                                         text='Rename directories',
                                          onvalue=True,
                                          offvalue=False,
                                          variable=self.rename_dirs)
         self.checkbox_subdirs = Checkbutton(self.rename_options_frame,
-                                            text="Rename subdirectories",
+                                            text='Rename subdirectories',
                                             onvalue=True,
                                             offvalue=False,
                                             variable=self.rename_subdirs)
 
         self.source_rename_text = StringVar(value='')
-        self.frame_rename_run = LabelFrame(rename_tab, text="Info and Run")
-        self.label_dir = Entry(self.frame_rename_run, textvariable=self.source_rename_text, width=30, state='readonly')
+        self.frame_rename_run = LabelFrame(rename_tab, text='Info and Run')
+        self.label_entry_len = 30
+        self.label_dir = Entry(self.frame_rename_run, textvariable=self.source_rename_text, width=self.label_entry_len,
+                               state='readonly')
         self.scroll_dir_name = Scrollbar(self.frame_rename_run, orient=HORIZONTAL, command=self.label_dir.xview)
         self.label_dir.config(xscrollcommand=self.scroll_dir_name.set)
-        self.button_run_rename = Button(self.frame_rename_run, text="Run", state=DISABLED)
+        self.button_run_rename = Button(self.frame_rename_run, text='Run', state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
-        self.choose_move_dir_frame = LabelFrame(move_tab, text="Choose Directories")
+        self.choose_move_dir_frame = LabelFrame(move_tab, text='Choose Directories')
         self.button_dir_move = Button(self.choose_move_dir_frame, text='Choose Source Directory')
         self.button_dir_move_to = Button(self.choose_move_dir_frame, text='Choose Destination Directory')
-        self.prefix_suffix_frame = LabelFrame(move_tab, text="Move files with names that...")
-        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text="Start with ", variable=self.pre_suf_cont,
+        self.prefix_suffix_frame = LabelFrame(move_tab, text='Move files with names that...')
+        self.radio_starts_with = Radiobutton(self.prefix_suffix_frame, text='Start with ', variable=self.pre_suf_cont,
                                              value=0)
-        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text="End with ", variable=self.pre_suf_cont,
+        self.radio_ends_with = Radiobutton(self.prefix_suffix_frame, text='End with ', variable=self.pre_suf_cont,
                                            value=1)
-        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text="Contain ", variable=self.pre_suf_cont,
+        self.radio_contains = Radiobutton(self.prefix_suffix_frame, text='Contain ', variable=self.pre_suf_cont,
                                           value=2)
-        self.label_move_blank = Label(self.prefix_suffix_frame, text="")
+        self.label_move_blank = Label(self.prefix_suffix_frame, text='')
         self.label_txt_warn_move = Label(self.prefix_suffix_frame,
                                          text='''File/directory names cannot contain:  \  /  ¦  *  ?  "  <  >  |''')
         self.label_txt_warn_move.config(foreground='red')
@@ -177,12 +181,12 @@ class SimpleScript:
         self.label_txt_warn_move.grid_remove()
         self.label_move_blank.grid(row=1, columnspan=3)
         self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 10))
-        self.label_source.grid(row=3, pady=(5,5))
+        self.label_source.grid(row=3, pady=(5, 5))
         self.label_dest.grid(row=4)
         self.button_run_move.grid(row=5, pady=(10, 5))
 
         # Text on bottom of window
-        self.label = Label(master, text="")
+        self.label = Label(master, text='')
         self.label.grid()
 
     def check_for_completion(self):  # Toggles "Rename Files" run button state after checking for a complete form
@@ -239,7 +243,7 @@ class SimpleScript:
         # Included if statement to prevent setting self.dir_path = "" when user cancels dialog
 
         temp_dir = filedialog.askdirectory()
-        if temp_dir != "":
+        if temp_dir != '':
             self.dir_path.set(temp_dir)
             self.update_rename_source(temp_dir)
             self.completed_items[0] = True
@@ -249,7 +253,7 @@ class SimpleScript:
 
     def choose_dir_move(self, event):
         temp_dir = filedialog.askdirectory()
-        if temp_dir != "":
+        if temp_dir != '':
             self.dir_path_move.set(temp_dir)
             self.update_move_source(temp_dir)
             self.completed_move_items[0] = True
@@ -265,7 +269,7 @@ class SimpleScript:
 
     def update_rename_source(self, text):
         self.label_dir.grid()
-        if len(text) > 30:
+        if len(text) > self.label_entry_len:
             self.scroll_dir_name.grid()
         else:
             self.scroll_dir_name.grid_remove()
@@ -273,7 +277,7 @@ class SimpleScript:
 
     def choose_dir_move_destination(self, event):
         temp_dir = filedialog.askdirectory()
-        if temp_dir != "":
+        if temp_dir != '':
             self.dir_path_move_to.set(temp_dir)
             self.update_move_dest(temp_dir)
             self.completed_move_items[1] = True
@@ -343,7 +347,7 @@ class SimpleScript:
         do_stuff = "yes"
 
     def error_handle(self, message_bank):
-        error_message = "The following " + str(len(message_bank)) + 'error(s) have occurred:\n'
+        error_message = 'The following ' + str(len(message_bank)) + 'error(s) have occurred:\n'
         for error in message_bank:
             error_message += error
         self.popup_window(error_message)
@@ -355,11 +359,11 @@ class SimpleScript:
         # Opted for an elif structure instead of creating a dictionary. If more tabs are
         # added, we'll swap this out for a dictionary.
 
-        tab_text = event.widget.tab(event.widget.index("current"), "text")
+        tab_text = event.widget.tab(event.widget.index('current'), 'text')
         if tab_text == self.TAB_NAMES[0]:  # "Rename Files"
-            self.label.configure(text="Find and replace phrases in file/directory names")
-        elif tab_text == "Move Files":  # "Move Files"
-            self.label.configure(text="Move select files to specified folders")
+            self.label.configure(text='Find and replace phrases in file/directory names')
+        elif tab_text == 'Move Files':  # "Move Files"
+            self.label.configure(text='Move select files to specified folders')
 
     def update_replace_this(self, event):
         self.check_rename_entries(event)
