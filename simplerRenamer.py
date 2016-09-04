@@ -98,10 +98,11 @@ class SimpleScript:
                                             offvalue=False,
                                             variable=self.rename_subdirs)
 
-        self.source_rename_text = "Directory: "
-        self.source_rename_text_temp = self.source_rename_text + 'None Selected'
+        self.source_rename_text = StringVar(value='Directory: ')
         self.frame_rename_run = LabelFrame(rename_tab, text="Info and Run")
-        self.label_rename_source = Label(self.frame_rename_run, text=self.source_rename_text_temp)
+        self.label_dir = Entry(self.frame_rename_run, textvariable=self.source_rename_text, state='readonly')
+        self.scroll_dir_name = Scrollbar(self.frame_rename_run, orient=HORIZONTAL, command=self.label_dir.xview)
+        self.label_dir.config(xscrollcommand=self.scroll_dir_name.set)
         self.button_run_rename = Button(self.frame_rename_run, text="Run", state=DISABLED)
 
         # "Move Files" Tab - Creating GUI elements
@@ -158,8 +159,9 @@ class SimpleScript:
         self.checkbox_dirs.grid(row=6, column=0, sticky=W)
         self.checkbox_subdirs.grid(row=7, column=0, sticky=W)
         self.frame_rename_run.grid(column=1, row=3, sticky=W)
-        self.label_rename_source.grid(column=1, row=3, padx=(5, 5), sticky=W)
-        self.button_run_rename.grid(column=1, row=4, padx=(5, 5), pady=(5, 5), sticky=W)
+        self.label_dir.grid(column=1, row=3, padx=(5, 5), sticky=W)
+        self.scroll_dir_name.grid(column=1, row=4, sticky='ew')
+        self.button_run_rename.grid(column=1, row=5, padx=(5, 5), pady=(5, 5), sticky=W)
 
         # "Move Files" Tab - Gridding GUI elements
         self.choose_move_dir_frame.grid(row=0, pady=(10, 5))
@@ -260,7 +262,8 @@ class SimpleScript:
         self.label_dest.config(text=self.dest_text + text)
 
     def update_rename_source(self, text):
-        self.label_rename_source.config(text=self.dest_text + text)
+        self.source_rename_text.set('Destination: ' + text)
+        #self.label_dir.config(text=self.dest_text + text)
 
     def choose_dir_move_destination(self, event):
         temp_dir = filedialog.askdirectory()
