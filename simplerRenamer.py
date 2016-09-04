@@ -7,7 +7,7 @@
 from tkinter import *  # Python 3.x
 from tkinter import filedialog
 from tkinter.ttk import *
-import sys
+import shutil  # In case of moving files between drives
 import os
 
 
@@ -21,7 +21,8 @@ class SimpleScript:
 
     error_unexpected = 'Unexpected error occurred: '
     error_renamed_exists = 'Renamed file already exists: '
-    error_none_renamed = 'No files/directories could be renamed'
+    error_moved_exists = 'Moved file already exists: '
+    error_none_renamed = 'No files and/or directories could be renamed'
     error_none_moved = 'No files could be moved'
     error_dir_not_exist = 'Directory not found: '
 
@@ -65,7 +66,6 @@ class SimpleScript:
         self.dir_path_move_to = StringVar()
         self.pre_suf_cont = IntVar()
         self.start_end_contain = StringVar()
-        self.move_files_here = StringVar()
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text='Choose Directory')
@@ -344,7 +344,19 @@ class SimpleScript:
             return []
 
     def run_move(self, event):
-        do_stuff = "yes"
+        error_messages = []
+        for f in os.scandir(self.dir_path_move.get()):
+            file = self.dir_path_move.get() + '\\' + f.name
+            destination = self.dir_path_move_to.get() + '\\' + f.name
+            if os.path.exists(destination):
+                message = self.error_moved_exists + destination
+                error_messages.append(message)
+            elif (os.path.isfile(file) and len(f.name) > len(self.start_end_contain.get())) and (
+                            ((self.pre_suf_cont.get() == 0) and (f.name.startswith(self.start_end_contain.get()))) or (
+                                    (self.pre_suf_cont.get() == 1) and (
+                                        f.name.endswith(self.start_end_contain.get()))) or (
+                                (self.pre_suf_cont.get() == 2) and (self.start_end_contain.get() in f.name))):
+                shutil.move(file, destination)
 
     def error_handle(self, message_bank):
         error_message = 'The following ' + str(len(message_bank)) + 'error(s) have occurred:\n'
