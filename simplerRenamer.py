@@ -15,9 +15,13 @@ class SimpleScript:
     TAB_NAMES = ["Rename Files", "Move Files"]
     FRAME_WIDTH = 400
     FRAME_HEIGHT = 250
+
     successful_rename = "File/directory rename successful."
     successful_move = "File/directory relocation successful."
+
+    error_unexpected = "Unexpected error occurred: "
     error_renamed_exists = "Renamed file already exists: "
+    error_dir_not_exist = "Directory not found: "
 
     def __init__(self, master):
         master.title("Simple Script")
@@ -159,17 +163,17 @@ class SimpleScript:
 
         # "Move Files" Tab - Gridding GUI elements
         self.choose_move_dir_frame.grid(row=0, pady=(10, 5))
-        self.button_dir_move.grid(column=0, row=0, pady=(10, 2))
+        self.button_dir_move.grid(column=0, row=0, padx=(5, 0), pady=(10, 5))
         self.button_dir_move_to.grid(column=1, row=0, padx=(5, 5), pady=(10, 5))
         self.prefix_suffix_frame.grid(column=0, row=1, padx=(5, 5))
-        self.radio_starts_with.grid(row=0, column=0)
+        self.radio_starts_with.grid(row=0, column=0, pady=(5, 0))
         self.radio_ends_with.grid(row=0, column=1)
         self.radio_contains.grid(row=0, column=2)
         self.label_txt_warn_move.grid(row=1, columnspan=3)
         self.label_txt_warn_move.grid_remove()
         self.label_move_blank.grid(row=1, columnspan=3)
         self.entry_pre_suf_cont.grid(row=2, columnspan=3, padx=(5, 5), pady=(0, 10))
-        self.label_source.grid(row=3)
+        self.label_source.grid(row=3, pady=(5,5))
         self.label_dest.grid(row=4)
         self.button_run_move.grid(row=5, pady=(10, 5))
 
