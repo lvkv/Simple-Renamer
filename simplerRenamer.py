@@ -292,7 +292,7 @@ class SimpleScript:
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (
                             self.rename_files.get() and os.path.isfile(file)):
                     mod = self.dir_path.get() + "\\" + f.name.replace(self.replace_this.get(), self.with_this.get())
-                    if os.path.exists(mod):
+                    if os.path.exists(mod) and mod != file:
                         error_messages.append(self.error_renamed_exists + mod + '\n')
                     else:
                         os.rename(file, mod)
