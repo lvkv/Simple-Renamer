@@ -22,8 +22,8 @@ class SimpleScript:
     error_unexpected = 'Unexpected error occurred: '
     error_renamed_exists = 'Renamed file already exists: '
     error_moved_exists = 'Moved file already exists: '
-    error_none_renamed = 'No files and/or directories could be renamed'
-    error_none_moved = 'No files could be moved'
+    error_none_renamed = 'No files and/or directories were renamed'
+    error_none_moved = 'No files were moved'
     error_dir_not_exist = 'Directory not found: '
 
     def __init__(self, master):
@@ -102,7 +102,7 @@ class SimpleScript:
 
         self.source_rename_text = StringVar(value='')
         self.frame_rename_run = LabelFrame(rename_tab, text='Info and Run')
-        self.label_entry_len = 30
+        self.label_entry_len = 32
         self.label_dir = Entry(self.frame_rename_run, textvariable=self.source_rename_text, width=self.label_entry_len,
                                state='readonly')
         self.scroll_dir_name = Scrollbar(self.frame_rename_run, orient=HORIZONTAL, command=self.label_dir.xview)
@@ -296,6 +296,7 @@ class SimpleScript:
             return
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
             error_messages = []
+            num_renamed = 0
             for f in os.scandir(self.dir_path.get()):
                 file = self.dir_path.get() + "\\" + f.name
                 if (self.rename_dirs.get() and os.path.isdir(file)) or (
@@ -305,6 +306,9 @@ class SimpleScript:
                         error_messages.append(self.error_renamed_exists + mod + '\n')
                     else:
                         os.rename(file, mod)
+                        num_renamed += 1
+            if num_renamed == 0:
+                error_messages.append(self.error_none_renamed)
             if len(error_messages) != 0:
                 self.error_handle(error_messages)
             else:
@@ -345,6 +349,7 @@ class SimpleScript:
 
     def run_move(self, event):
         error_messages = []
+        num_complete = 0
         for f in os.scandir(self.dir_path_move.get()):
             file = self.dir_path_move.get() + '\\' + f.name
             destination = self.dir_path_move_to.get() + '\\' + f.name
@@ -357,9 +362,19 @@ class SimpleScript:
                                         f.name.endswith(self.start_end_contain.get()))) or (
                                 (self.pre_suf_cont.get() == 2) and (self.start_end_contain.get() in f.name))):
                 shutil.move(file, destination)
+                num_complete += 1
+        if num_complete == 0:
+            error_messages.append(self.error_none_moved)
+        if len(error_messages) > 0:
+            self.error_handle(error_messages)
+        else:
+            self.popup_window(self.successful_move)
 
     def error_handle(self, message_bank):
-        error_message = 'The following ' + str(len(message_bank)) + 'error(s) have occurred:\n'
+        if len(message_bank) > 1:
+            error_message = 'The following ' + str(len(message_bank)) + ' errors have occurred:\n'
+        else:
+            error_message = 'The following error has occurred:\n'
         for error in message_bank:
             error_message += error
         self.popup_window(error_message)
