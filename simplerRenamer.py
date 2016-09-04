@@ -159,9 +159,11 @@ class SimpleScript:
         self.checkbox_dirs.grid(row=6, column=0, sticky=W)
         self.checkbox_subdirs.grid(row=7, column=0, sticky=W)
         self.frame_rename_run.grid(column=1, row=3, sticky=W)
-        self.label_dir.grid(column=1, row=3, padx=(5, 5), sticky=W)
+        self.label_dir.grid(column=1, row=3, padx=(5, 5), sticky='ew')
+        self.label_dir.grid_remove()
         self.scroll_dir_name.grid(column=1, row=4, sticky='ew')
-        self.button_run_rename.grid(column=1, row=5, padx=(5, 5), pady=(5, 5), sticky=W)
+        self.scroll_dir_name.grid_remove()
+        self.button_run_rename.grid(column=1, row=5, padx=(5, 5), pady=(5, 5), sticky='ew')
 
         # "Move Files" Tab - Gridding GUI elements
         self.choose_move_dir_frame.grid(row=0, pady=(10, 5))
@@ -262,6 +264,8 @@ class SimpleScript:
         self.label_dest.config(text=self.dest_text + text)
 
     def update_rename_source(self, text):
+        self.label_dir.grid()
+        self.scroll_dir_name.grid()
         self.source_rename_text.set('Destination: ' + text)
         #self.label_dir.config(text=self.dest_text + text)
 
