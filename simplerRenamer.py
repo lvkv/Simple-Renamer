@@ -7,12 +7,12 @@
 from tkinter import *  # Python 3.x
 from tkinter import filedialog
 from tkinter.ttk import *
+import webbrowser
 import shutil  # In case of moving files between drives
 import os
 
-
 class SimpleScript:
-    TAB_NAMES = ['Rename Files', 'Move Files']
+    TAB_NAMES = ['Rename Files', 'Move Files', 'About']
     FRAME_WIDTH = 400
     FRAME_HEIGHT = 250
 
@@ -41,6 +41,8 @@ class SimpleScript:
         tabs.add(rename_tab, text=self.TAB_NAMES[0])
         move_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
         tabs.add(move_tab, text=self.TAB_NAMES[1])
+        about_tab = Frame(width=self.FRAME_WIDTH, height=self.FRAME_HEIGHT)
+        tabs.add(about_tab, text=self.TAB_NAMES[2])
         tabs.bind_all('<<NotebookTabChanged>>', self.cycle_frame_text)
         tabs.grid()
 
@@ -66,6 +68,12 @@ class SimpleScript:
         self.dir_path_move_to = StringVar()
         self.pre_suf_cont = IntVar()
         self.start_end_contain = StringVar()
+
+        # "About" Tab
+        self.label_credit = Label(about_tab, text='Lukas Velikov 2016\ngithub.com/lvkv')
+        self.label_credit.config(foreground='grey', cursor='hand2')
+        self.label_credit.bind('<Button-1>', self.open_github)
+        self.label_credit.grid(padx=((self.FRAME_WIDTH/2)-50, 0), pady=((self.FRAME_HEIGHT/2)-20, 0))
 
         # "Rename Files" Tab - Creating GUI elements
         button_dir = Button(rename_tab, text='Choose Directory')
@@ -189,6 +197,9 @@ class SimpleScript:
         self.label = Label(master, text='')
         self.label.grid()
 
+    def open_github(self, event):
+        webbrowser.open('https://github.com/lvkv')
+
     def check_for_completion(self):  # Toggles "Rename Files" run button state after checking for a complete form
         for item in self.completed_items:
             if not item:
@@ -223,25 +234,14 @@ class SimpleScript:
         self.checkbox_complete(event)
         self.rename_subdirs.set(not self.rename_subdirs.get())
 
-    def checkbox_complete(self, event):
-        # INPUT: Window and left click event
-        # OUTPUT: Marks a portion of the form complete if one or more boxes are checked
-        #
-        # No other elements use a check-if-this-form-element-is-complete method because that
-        # functionality is already inside their respective bound functions
-
+    def checkbox_complete(self, event):  # Acknowledges the checkbox portion of the "Rename Files" tab as done or not
         if self.rename_files.get() or self.rename_dirs.get() or self.rename_subfiles.get() or self.rename_subdirs.get():
             self.completed_items[2] = True
         else:
             self.completed_items[2] = False
         self.check_for_completion()
 
-    def choose_dir(self, event):
-        # INPUT: Window and left click event
-        # OUTPUT: Changes value of self.dir_path to path of folder selected in dialog box
-        #
-        # Included if statement to prevent setting self.dir_path = "" when user cancels dialog
-
+    def choose_dir(self, event):  # User chooses "Rename Files" directory
         temp_dir = filedialog.askdirectory()
         if temp_dir != '':
             self.dir_path.set(temp_dir)
@@ -251,7 +251,7 @@ class SimpleScript:
             self.completed_items[0] = False
         self.check_for_completion()
 
-    def choose_dir_move(self, event):
+    def choose_dir_move(self, event):  # User chooses source directory when in "Move Files"
         temp_dir = filedialog.askdirectory()
         if temp_dir != '':
             self.dir_path_move.set(temp_dir)
@@ -285,13 +285,7 @@ class SimpleScript:
             self.completed_move_items[1] = False
         self.check_for_move_complete()
 
-    def run_rename(self, event):
-        # INPUT: <Button-1> left mouse click event
-        # OUTPUT:
-        #
-        # First if statement prevents execution if user clicks on button in disabled state (why is that allowed?)
-        # This is the functional part of the "Rename Files" tab. The part that actually does stuff.
-
+    def run_rename(self, event):  # Renames files/dirs based on user specifications
         if str(self.button_run_rename['state']) == 'disabled':
             return
         if (not self.rename_subdirs.get()) and (not self.rename_subfiles.get()):  # Only doing root directory
@@ -309,7 +303,7 @@ class SimpleScript:
                         num_renamed += 1
             if num_renamed == 0:
                 error_messages.append(self.error_none_renamed)
-            if len(error_messages) != 0:
+            if len(error_messages) > 0:
                 self.error_handle(error_messages)
             else:
                 self.popup_window(self.successful_rename)
@@ -379,18 +373,14 @@ class SimpleScript:
             error_message += error
         self.popup_window(error_message)
 
-    def cycle_frame_text(self, event):
-        # INPUT: Window and <<NotebookTabChanged>> event
-        # OUTPUT: Changes text on bottom of tab frame to the new tab's respective description
-        #
-        # Opted for an elif structure instead of creating a dictionary. If more tabs are
-        # added, we'll swap this out for a dictionary.
-
+    def cycle_frame_text(self, event):  # Cycles text on window bottom to match selected tab
         tab_text = event.widget.tab(event.widget.index('current'), 'text')
         if tab_text == self.TAB_NAMES[0]:  # "Rename Files"
             self.label.configure(text='Find and replace phrases in file/directory names')
-        elif tab_text == 'Move Files':  # "Move Files"
+        elif tab_text == self.TAB_NAMES[1]:  # "Move Files"
             self.label.configure(text='Move select files to specified folders')
+        elif tab_text == self.TAB_NAMES[2]:  # "About"
+            self.label.configure(text='...')
 
     def update_replace_this(self, event):
         self.check_rename_entries(event)
@@ -418,7 +408,7 @@ class SimpleScript:
             self.completed_move_items[3] = False
         self.check_for_move_complete()
 
-    def flip_warnings(self, on_top):
+    def flip_warnings(self, on_top):  # Turns text warnings on if on_top, else turns them off
         if on_top:
             self.label_move_blank.grid_remove()
             self.label_blank.grid_remove()
@@ -434,6 +424,7 @@ class SimpleScript:
 
     def popup_window(self, message):
         top_level = Toplevel()
+        top_level.resizable(0, 0)
         message_label = Label(top_level, text=message)
         message_label.grid(padx=(10, 10), pady=(10, 10))
 
