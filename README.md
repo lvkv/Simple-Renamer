@@ -10,9 +10,13 @@ Sample Usage #2:
   YOU: "I have just the thing for you!"
   
 Sample Usage #3:
+
   Profiting = True
+  
   profit = 0
+  
   charge = 20
+  
   classmate_name = "Rupert"
   while Profiting:
     MISCHIEVOUS BOY: "Can you rename all subdirectories (and files within those directories) on this server so that " + classmate_name + " is replaced with 'Smelly Face'?"
